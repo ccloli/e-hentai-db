@@ -1,0 +1,16 @@
+{
+  "name": "e-hentai-db",
+  "version": "0.0.1",
+  "private": true,
+  "description": "E-Hentai Database",
+  "main": "index.js",
+  "scripts": {
+    "import": "node import.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ccloli",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "mysql": "^2.17.1"
+  }
+}
