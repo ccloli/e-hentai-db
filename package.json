@@ -5,12 +5,14 @@
   "description": "E-Hentai Database",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "import": "node import.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "ccloli",
   "license": "GPL-3.0",
   "dependencies": {
+    "express": "^4.17.1",
     "mysql": "^2.17.1"
   }
 }

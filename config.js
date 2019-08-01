@@ -1,7 +1,10 @@
 module.exports = {
 	dbHost: 'localhost',
 	dbPort: 3306,
-	dbName: 'ehentai-db',
+	dbName: 'e-hentai-db',
 	dbUser: 'root',
-	dbPass: ''
+	dbPass: '',
+	port: 8880,
+	cors: false,
+	corsOrigin: '*',
 };
