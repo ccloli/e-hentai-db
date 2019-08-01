@@ -106,8 +106,8 @@ class Import {
 				if (newTags.length) {
 					// insert multiple rows only returns the last insert id
 					// to make it simple, select them again, but it may affect performance
-					await this.query('INSERT INTO tag (name) VALUES ?', [newTags.map(e => [e])]);
-					const results = await this.query('SELECT * FROM tag WHERE `name` IN (?)', [newTags]);
+					const { insertId } = await this.query('INSERT INTO tag (name) VALUES ?', [newTags.map(e => [e])]);
+					const results = await this.query('SELECT * FROM tag WHERE id >= ?', [insertId]);
 					results.forEach((e) => tagMap[e.name] = e.id);
 				}
 
