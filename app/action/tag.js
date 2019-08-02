@@ -19,31 +19,6 @@ const tagList = async (req, res) => {
 	}
 
 	const conn = await new ConnectDB().connect();
-	// const tidResult = await conn.query('SELECT id FROM tag WHERE name IN (?)', [tags]);
-	// const tids = tidResult.map(e => e.id);
-	// const query = tids.reduce((table, id) => {
-	// 	if (!table) {
-	// 		table = 'gid_tid';
-	// 	}
-	// 	else {
-	// 		table = `(SELECT b.* FROM ${table} AS a LEFT JOIN gid_tid AS b ON a.gid = b.gid)`;
-	// 	}
-	// 	return conn.connection.format(`(SELECT gid FROM ${table} AS t WHERE tid = ?)`, [id])
-	// }, '');
-	// console.log(query);
-
-	// const result = await conn.query(
-	// 	`SELECT * FROM gallery WHERE gid IN (
-	// 		SELECT DISTINCT gid FROM (
-	// 			SELECT gid, COUNT(1) AS count FROM gid_tid WHERE tid IN (
-	// 				SELECT id FROM tag WHERE name IN (?)
-	// 			) GROUP BY gid HAVING count = ? ORDER BY NULL
-	// 		) AS t
-	// 	) ORDER BY posted DESC LIMIT ? OFFSET ?`,
-	// 	[tags, tags.length, limit, (page - 1) * limit]
-	// );
-	// console.log(result);
-	// const gids = result.map(e => e.gid);
 
 	const result = await conn.query(
 		`SELECT a.* FROM gallery AS a INNER JOIN (
@@ -54,31 +29,10 @@ const tagList = async (req, res) => {
 		[tags, tags.length, limit, (page - 1) * limit]
 	);
 	const gids = result.map(e => e.gid);
-
-	// const preResult = await conn.query(
-	// 	'SELECT b.gid, a.name, COUNT(b.gid) AS count FROM (SELECT * FROM tag WHERE name IN (?)) AS a INNER JOIN gid_tid AS b ON a.id = b.tid',
-	// 	[tags]
-	// );
-	// console.log(preResult);
-	// const gidMaps = {};
-	// const tagMaps = tags.reduce((pre, e) => {
-	// 	pre[e] = 1;
-	// 	return pre;
-	// }, {});
-	// const tagLength = tags.length;
-	// preResult.forEach(({ gid, name }) => {
-	// 	if (tagMaps[name]) {
-	// 		gidMaps[gid] = (gidMaps[gid] || 0) + 1;
-	// 	}
-	// });
-	// const preGids = Object.entries(gidMaps).filter(([key, value]) => value === tagLength).map(e => +e[0]);
-
-	// const result = await conn.query(
-	// 	`SELECT * FROM gallery WHERE gid IN (?) ORDER BY posted DESC LIMIT ? OFFSET ?`,
-	// 	[preGids, limit, (page - 1) * limit]
-	// );
-	// console.log(result);
-	// const gids = result.map(e => e.gid);
+	if (!gids.length) {
+		conn.destroy();
+		return res.json(getResponse([], 200, 'success'));
+	}
 
 	const tagResult = await conn.query(
 		'SELECT a.gid, b.name FROM gid_tid AS a INNER JOIN tag AS b ON a.tid = b.id WHERE a.gid IN (?)', [gids]
