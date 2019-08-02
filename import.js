@@ -8,7 +8,7 @@ class Import {
 			host: config.dbHost,
 			port: config.dbPort,
 			user: config.dbUser,
-			pass: config.dbPass,
+			password: config.dbPass,
 			database: config.dbName,
 			timeout: 10e3,
 		});
