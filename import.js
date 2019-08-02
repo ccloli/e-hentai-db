@@ -90,7 +90,7 @@ class Import {
 			const ct = new Date();
 			console.log(`started inserting at ${ct}`);
 
-			await this.query('SET NAMES UTF8');
+			await this.query('SET NAMES UTF8MB4');
 
 			let index = 0;
 			for (let id of ids) {
