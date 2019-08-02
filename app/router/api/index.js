@@ -3,6 +3,7 @@ const gallery = require('./gallery');
 const list = require('./list');
 const tag = require('./tag');
 const category = require('./category');
+const uploader = require('./uploader');
 const notFound = require('../../action/notFound');
 
 const router = Router();
@@ -12,6 +13,7 @@ router.use('/list', list);
 router.use('/tag', tag);
 router.use('/category', category);
 router.use('/cat', category);
+router.use('/uploader', uploader);
 router.use('/', notFound);
 
 module.exports = router;
