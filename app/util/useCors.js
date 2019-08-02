@@ -1,5 +1,4 @@
 const cors = (enabled, origin) => (req, res, next) => {
-	console.log(enabled, origin);
 	if (enabled) {
 		res.header({
 			'access-control-allow-origin': origin || req.headers.origin || '*',
