@@ -14,7 +14,8 @@ Just another E-Hentai metadata database
 
 1. `git clone` the repo
 
-2. Run `npm i` in the repo directory to install dependencies
+2. Run `npm i --production` in the repo directory to install dependencies
+    - If you want to contribute it in local, use `npm i` directly
 
 3. Download `gdata.json` from [E-Hentai Forums](https://forums.e-hentai.org/index.php?s=&showtopic=201268&view=findpost&p=5474857) and place it into the repo directory
 
@@ -75,17 +76,25 @@ The response type of all APIs are JSON, and follow the format below.
 
 Alias: `/api/g/:gid/:token`
 
-Get gallery metadata, `gid` and `token` are both required.
+Get gallery metadata.
+
+Query params:  
+- `gid`: Gallery ID _(required)_
+- `token`: Gallery token _(required)_
 
 Returns: `metadata`
 
-### `/api/list?page={page=1}&limit={limit=10}`  
+### `/api/list`  
 
-Get a list of galleries, `limit` should not be larger than `25`.
+Get a list of galleries.
+
+Query params:  
+- `page`: Page number _(default: `1`)_
+- `limit`: Gallery number per page _(default: `10`, <= `25`)_
 
 Returns: `metadata[]`
 
-### `/api/category/:category?page={page=1}&limit={limit=10}`
+### `/api/category/:category`
 
 Alias: `/api/cat/:category?page={page=1}&limit={limit=10}`
 
@@ -106,19 +115,57 @@ Non-H               256         (1 << 8)
 Western             512         (1 << 9)
 ```
 
+Query params:  
+- `category`: Gallery category _(required)_
+- `page`: Page number _(default: `1`)_
+- `limit`: Gallery number per page _(default: `10`, <= `25`)_
+
 Returns: `metadata[]`
 
-### `/api/tag/:tag?page={page=1}&limit={limit=10}`  
+### `/api/tag/:tag`  
 
 Get a list of galleries which matches ALL of specific tags, `tag` can be a list split with `,`, then it will returns the matched galleries.
 
 The tag should include the category type of tag, like if you want to search some full-colored Chinese translated furry galleries with male fox, you can try `/api/tag/language:chinese,male:furry,male:fox,full%20color`.
 
+Query params:  
+- `tag`: Tags _(required)_
+- `page`: Page number _(default: `1`)_
+- `limit`: Gallery number per page _(default: `10`, <= `25`)_
+
 Returns: `metadata[]`
 
-### `/api/uploader/:uploader?page={page=1}&limit={limit=10}`  
+### `/api/uploader/:uploader`  
 
 Get a list of galleries which uploaded by soneone.
+
+Query params:  
+- `uploader`: Uploader _(required)_
+- `page`: Page number _(default: `1`)_
+- `limit`: Gallery number per page _(default: `10`, <= `25`)_
+
+Returns: `metadata[]`
+
+### `/api/search`  
+
+Get a list of galleries which matches all the query requests.
+
+The rule of `keyword` is the same as E-Hentai:
+- If you want to search an uploader, use `uploader:{uploader}`
+- If you want to search a tag, use `{tagType}:{tagName}$`, and if `tagName` contains space, quote it and `$`, like `{tagType}:"{tagName}$"`
+- If you want to search a word, just put it, and if it contains space, quote it like `"{keyword}"`
+
+You can use multiple keywords, split them with space `%20`, relations between all the keywords are `AND` (except `uploder` uses `OR`), so in theory more keywords will get more accure results
+
+Query params:  
+- `keyword`: Search keywords, split them with space `%20`
+- `category`: Gallery category, same as `/api/category`
+- `expunged`: Show expunged gallery _(default: `0`)_
+- `minpage`: Show gallery with page count larger than this _(default: `0`)_
+- `maxpage`: Show gallery with page count smaller than this _(default: `0`)_
+- `minrating`: Show gallery with minimal stars (includes minus half stars) _(default: `0`, <= `5`)_
+- `page`: Page number _(default: `1`)_
+- `limit`: Gallery number per page _(default: `10`, <= `25`)_
 
 Returns: `metadata[]`
 
@@ -176,13 +223,13 @@ Try `npm start &`, or use `PM2` or `forever` to keep it running in background
 
 ## Todos (or not to do)
 
-- Advanced search (tags, category, uploader, keyword in one search)
+- [X] Advanced search (tags, category, uploader, keyword in one search)
 
-- Web UI
+- [ ] Web UI
 
-- Torrent hashes
+- [ ] Torrent hashes
 
-- Update to latest galleries
+- [ ] Update to latest galleries
 
 
 ## Thanks
