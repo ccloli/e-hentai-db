@@ -3,6 +3,9 @@ module.exports = {
         "es6": true,
         "node": true
     },
+    "parserOptions": {
+        "ecmaVersion": 2018,
+    },
     "extends": "eslint:recommended",
     "rules": {
         "indent": [
@@ -20,6 +23,12 @@ module.exports = {
         "semi": [
             "error",
             "always"
-        ]
+        ],
+        "no-console": [
+            "warn"
+        ],
+        "no-param-reassign": [
+            "error"
+        ],
     }
 };

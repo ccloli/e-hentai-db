@@ -31,7 +31,7 @@ class ConnectDB {
 	query(...args) {
 		return new Promise((resolve, reject) => {
 			try {
-				this.connection.query(...args, (error, results, fields) => {
+				this.connection.query(...args, (error, results) => {
 					if (error) {
 						reject(error);
 						return;

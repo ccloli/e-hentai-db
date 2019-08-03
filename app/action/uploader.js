@@ -1,6 +1,5 @@
 const ConnectDB = require('../util/connectDB');
 const getResponse = require('../util/getResponse');
-const { categoryList, categoryMap } = require('../util/category');
 
 const uploaderList = async (req, res) => {
 	let { uploader, page = 1, limit = 10 } = Object.assign({}, req.params, req.query);
