@@ -25,7 +25,7 @@ const tagList = async (req, res) => {
 			SELECT a.*, COUNT(a.gid) AS count FROM gid_tid AS a INNER JOIN (
 				SELECT id FROM tag WHERE name IN (?)
 			) AS b ON a.tid = b.id GROUP BY a.gid HAVING count = ? ORDER BY NULL
-		) AS b ON a.gid = b.gid ORDER BY posted DESC LIMIT ? OFFSET ?`,
+		) AS b ON a.gid = b.gid WHERE expunged = 0 ORDER BY posted DESC LIMIT ? OFFSET ?`,
 		[tags, tags.length, limit, (page - 1) * limit]
 	);
 	const gids = result.map(e => e.gid);

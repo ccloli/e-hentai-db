@@ -15,7 +15,7 @@ const list = async (req, res) => {
 
 	const conn = await new ConnectDB().connect();
 
-	const result = await conn.query('SELECT * FROM gallery ORDER BY posted DESC LIMIT ? OFFSET ?', [limit, (page - 1) * limit]);
+	const result = await conn.query('SELECT * FROM gallery WHERE expunged = 0 ORDER BY posted DESC LIMIT ? OFFSET ?', [limit, (page - 1) * limit]);
 	const gids = result.map(e => e.gid);
 
 	const tags = await conn.query('SELECT a.gid, b.name FROM gid_tid AS a INNER JOIN tag AS b ON a.tid = b.id WHERE a.gid IN (?)', [gids]);

@@ -34,7 +34,7 @@ const list = async (req, res) => {
 
 	const conn = await new ConnectDB().connect();
 
-	const result = await conn.query('SELECT * FROM gallery WHERE category in (?) ORDER BY posted DESC LIMIT ? OFFSET ?', [cat, limit, (page - 1) * limit]);
+	const result = await conn.query('SELECT * FROM gallery WHERE expunged = 0 AND category in (?) ORDER BY posted DESC LIMIT ? OFFSET ?', [cat, limit, (page - 1) * limit]);
 	if (!result.length) {
 		conn.destroy();
 		return res.json(getResponse([], 200, 'success'));
