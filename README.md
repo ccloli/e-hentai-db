@@ -40,7 +40,8 @@ The response type of all APIs are JSON, and follow the format below.
 {
     "code": 200,          // 200 = success
     "data": {...},        // response data
-    "message": "success"
+    "message": "success", // error message
+    "total": 100          // result counts (if `data` is a list)
 }
 ```
 
