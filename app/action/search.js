@@ -81,15 +81,17 @@ const search = async (req, res) => {
 	].filter(e => e).join(' AND ');
 
 	const result = await conn.query(
-		`SELECT gallery.* FROM ${table}
+		`SELECT SQL_CALC_FOUND_ROWS gallery.* FROM ${table}
 			WHERE ${query} ORDER BY posted DESC LIMIT ? OFFSET ?`,
 		[limit, (page - 1) * limit]
 	);
-	const gids = result.map(e => e.gid);
-	if (!gids.length) {
+	const { total } = (await conn.query('SELECT FOUND_ROWS() AS total'))[0];
+
+	if (!result.length) {
 		conn.destroy();
-		return res.json(getResponse([], 200, 'success'));
+		return res.json(getResponse([], 200, 'success', { total }));
 	}
+	const gids = result.map(e => e.gid);
 
 	const tagResult = await conn.query(
 		'SELECT a.gid, b.name FROM gid_tid AS a INNER JOIN tag AS b ON a.tid = b.id WHERE a.gid IN (?)', [gids]
@@ -107,7 +109,7 @@ const search = async (req, res) => {
 	});
 
 	conn.destroy();
-	return res.json(getResponse(result, 200, 'success'));
+	return res.json(getResponse(result, 200, 'success', { total }));
 };
 
 module.exports = search;

@@ -1,5 +1,5 @@
-const getResponse = (data, code = 200, message = '') => ({
-	code, data, message
+const getResponse = (data, code = 200, message = '', rest) => ({
+	code, data, message, ...rest
 });
 
 module.exports = getResponse;

@@ -21,18 +21,20 @@ const tagList = async (req, res) => {
 	const conn = await new ConnectDB().connect();
 
 	const result = await conn.query(
-		`SELECT a.* FROM gallery AS a INNER JOIN (
+		`SELECT SQL_CALC_FOUND_ROWS a.* FROM gallery AS a INNER JOIN (
 			SELECT a.*, COUNT(a.gid) AS count FROM gid_tid AS a INNER JOIN (
 				SELECT id FROM tag WHERE name IN (?)
 			) AS b ON a.tid = b.id GROUP BY a.gid HAVING count = ? ORDER BY NULL
 		) AS b ON a.gid = b.gid WHERE expunged = 0 ORDER BY posted DESC LIMIT ? OFFSET ?`,
 		[tags, tags.length, limit, (page - 1) * limit]
 	);
-	const gids = result.map(e => e.gid);
-	if (!gids.length) {
+	const { total } = (await conn.query('SELECT FOUND_ROWS() AS total'))[0];
+
+	if (!result.length) {
 		conn.destroy();
-		return res.json(getResponse([], 200, 'success'));
+		return res.json(getResponse([], 200, 'success', { total }));
 	}
+	const gids = result.map(e => e.gid);
 
 	const tagResult = await conn.query(
 		'SELECT a.gid, b.name FROM gid_tid AS a INNER JOIN tag AS b ON a.tid = b.id WHERE a.gid IN (?)', [gids]
@@ -49,7 +51,7 @@ const tagList = async (req, res) => {
 	});
 
 	conn.destroy();
-	return res.json(getResponse(result, 200, 'success'));
+	return res.json(getResponse(result, 200, 'success', { total }));
 };
 
 module.exports = tagList;
