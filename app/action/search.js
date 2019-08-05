@@ -32,35 +32,72 @@ const search = async (req, res) => {
 		cats = category.split(/\s*,\s*/).filter(e => e);
 	}
 
+	const getTargetValue = (input, to) => {
+		let value = input;
+		let target = to.inc;
+		if (value[0] === '-') {
+			value = value.substr(1);
+			target = to.exc;
+		}
+		return { target, value };
+	};
+
 	const rawUploader = matchExec(keyword, /(?:^|\s)(uploader:(.+?))(?=\s|$)/g);
-	const uploader = [];
+	const uploader = { inc: [], exc: [] };
 	keyword = rawUploader.reduceRight((pre, cur) => {
-		uploader.unshift(cur[1]);
+		const { target, value } = getTargetValue(cur[1], uploader);
+		target.unshift(value);
 		return pre.substr(0, cur.index) + pre.substr(cur.index + cur[0].length);
 	}, keyword);
 
 	const rawTags = matchExec(keyword, /(?:^|\s)(\S+?:(?:"[\s\S]+?\$"|.+?\$))(?=\s|$)/g);
-	const tags = [];
+	const tags = { inc: [], exc: [] };
 	keyword = rawTags.reduceRight((pre, cur) => {
-		tags.unshift(cur[1].replace(/"|\$/g, ''));
+		const { target, value } = getTargetValue(cur[1].replace(/"|\$/g, ''), tags);
+		target.unshift(value);
 		return pre.substr(0, cur.index) + pre.substr(cur.index + cur[0].length);
 	}, keyword);
 
-	const keywords = (keyword.match(/".+?"|[^\s]+/g) || []).map(e => e.replace(/^"|"$/g, ''));
+	const keywords = { inc: [], exc: [] };
+	(keyword.match(/".+?"|[^\s]+/g) || []).forEach((e) => {
+		const { target, value } = getTargetValue(e, tags);
+		target.push(value.replace(/^"|"$/g, ''));
+	});
 
 	const conn = await new ConnectDB().connect();
 
 	let table;
-	if (tags.length) {
-		// prefer to get tag galleries first
-		table = conn.connection.format(
-			`gallery INNER JOIN (
-				SELECT a.*, COUNT(a.gid) AS count FROM gid_tid AS a INNER JOIN (
-					SELECT id FROM tag WHERE name IN (?)
-				) AS b ON a.tid = b.id GROUP BY a.gid HAVING count = ? ORDER BY NULL
-			) AS t ON gallery.gid = t.gid`,
-			[tags, tags.length]
-		);
+	// prefer to get tag galleries first
+	if (tags.inc.length || tags.exc.length) {
+		if (tags.inc.length) {
+			table = conn.connection.format(
+				`(
+					SELECT a.* FROM gid_tid AS a INNER JOIN (
+						SELECT id FROM tag WHERE name IN (?)
+					) AS b ON a.tid = b.id GROUP BY a.gid HAVING COUNT(a.gid) = ? ORDER BY NULL
+				)`,
+				[tags.inc, tags.inc.length]
+			);
+		}
+		if (tags.exc.length) {
+			const excTable = conn.connection.format(
+				`(
+					SELECT a.* FROM gid_tid AS a INNER JOIN (
+						SELECT id FROM tag WHERE name IN (?)
+					) AS b ON a.tid = b.id
+				)`,
+				[tags.exc]
+			);
+			if (table) {
+				table = `(
+					SELECT a.* FROM ${table} AS a LEFT JOIN ${excTable} AS b ON a.gid = b.gid WHERE b.gid IS NULL
+				)`;
+			}
+			else {
+				table = excTable;
+			}
+		}
+		table = `gallery INNER JOIN ${table} AS t ON gallery.gid = t.gid`;
 	}
 	else {
 		table = 'gallery';
@@ -68,16 +105,20 @@ const search = async (req, res) => {
 
 	const query = [
 		!expunged && 'expunged = 0',
-		cats.length && conn.connection.format('category IN (?)', [cats]),
-		uploader.length && conn.connection.format('uploader IN (?)', [uploader]),
+		cats.length && cats.length !== 10 && conn.connection.format('category IN (?)', [cats]),
+		uploader.inc.length && conn.connection.format('uploader IN (?)', [uploader.inc]),
+		uploader.exc.length && conn.connection.format('uploader NOT IN (?)', [uploader.exc]),
 		minpage && conn.connection.format('filecount >= ?', [minpage]),
 		maxpage && conn.connection.format('filecount <= ?', [maxpage]),
 		minrating && conn.connection.format('rating >= ?', [minrating - 0.5]),
 		// MariaDB can use `RLIKE '(?=keywordA)(?=keywordB)...'` to optimize the performance
 		// but looks like MySQL 5+ doesn't support positive look ahead
-		keywords.length && keywords.map(
+		keywords.inc.length && keywords.inc.map(
 			e => conn.connection.format('CONCAT_WS(\' \', title, title_jpn) LIKE ?', `%${e}%`)
-		).join(' AND ')
+		).join(' AND '),
+		keywords.exc.length && keywords.exc.map(
+			e => conn.connection.format('CONCAT_WS(\' \', title, title_jpn) NOT LIKE ?', `%${e}%`)
+		).join(' AND '),
 	].filter(e => e).join(' AND ');
 
 	const result = await conn.query(
