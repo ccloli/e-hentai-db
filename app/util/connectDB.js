@@ -28,6 +28,10 @@ class ConnectDB {
 		});
 	}
 
+	format(...args) {
+		return this.connection.format(...args);
+	}
+
 	query(...args) {
 		return new Promise((resolve, reject) => {
 			try {
