@@ -144,7 +144,6 @@ const search = async (req, res) => {
 		gidTags[gid].push(name);
 	});
 	result.forEach(e => {
-		delete e.concat_title;
 		e.tags = gidTags[e.gid] || [];
 	});
 
