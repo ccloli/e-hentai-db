@@ -122,10 +122,10 @@ const search = async (req, res) => {
 	].filter(e => e).join(' AND ');
 
 	const result = await conn.query(
-		`SELECT gallery.* FROM ${table} WHERE ${query} ORDER BY gallery.posted DESC LIMIT ? OFFSET ?`,
+		`SELECT gallery.* FROM ${table} WHERE ${query || 1} ORDER BY gallery.posted DESC LIMIT ? OFFSET ?`,
 		[limit, (page - 1) * limit]
 	);
-	const { total } = (await conn.query(`SELECT COUNT(*) AS total FROM ${table} WHERE ${query}`))[0];
+	const { total } = (await conn.query(`SELECT COUNT(*) AS total FROM ${table} WHERE ${query || 1}`))[0];
 
 	if (!result.length) {
 		conn.destroy();
