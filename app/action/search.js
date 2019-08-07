@@ -46,7 +46,7 @@ const search = async (req, res) => {
 	const uploader = { inc: [], exc: [] };
 	keyword = rawUploader.reduceRight((pre, cur) => {
 		const { target, value } = getTargetValue(cur[1], uploader);
-		target.unshift(value);
+		target.unshift(value.split(':', 2)[1]);
 		return pre.substr(0, cur.index) + pre.substr(cur.index + cur[0].length);
 	}, keyword);
 
