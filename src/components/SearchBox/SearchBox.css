@@ -1,0 +1,114 @@
+.container {
+	border: 3px solid #111;
+	background: #4f535b;
+	padding: 10px 22px;
+	margin-top: 20px;
+	text-align: center;
+	width: 720px;
+	margin: 0 auto 30px;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.category {
+	text-align: center;
+}
+
+.item {
+	width: 125px;
+	margin: 5px;
+	display: inline-block;
+}
+
+.item:nth-child(5n + 1) {
+	margin-left: 0;
+}
+
+.item:nth-child(5n) {
+	margin-right: 0;
+}
+
+.checkbox {
+	display: none;
+}
+
+.name {
+	box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5), 0 0 10px 1px inset rgba(255, 255, 255, 0.2);
+	display: block;
+	padding: 5px 0;
+	text-align: center;
+	text-transform: uppercase;
+	font-family: 'Comic Sans', 'Comic Sans MS'; /* LONG LIVE COMIC SANS!!! */
+	cursor: pointer;
+	transition: color 0.1s;
+	background: #888;
+	border-radius: 3px;
+}
+
+.checkbox:not(:checked) + .name{
+	box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5), 0 0 0 50px inset rgba(0, 0, 0, 0.5);
+	color: #999;
+}
+
+.search {
+	margin: 10px 0;
+	display: flex;
+}
+
+.input {
+	width: 100%;
+	padding: 6px;
+	border: 1px solid #ddd;
+	border-radius: 3px;
+}
+
+.button {
+	margin-left: 10px;
+	background: #34353b;
+	border: none;
+	color: inherit;
+	padding: 0 20px;
+	border-radius: 3px;
+}
+
+.button:hover {
+	background: #36383f;
+}
+
+.advance {
+	vertical-align: middle;
+	text-align: left;
+	line-height: 25px;
+}
+
+.advanceItem {
+	display: inline-block;
+	width: 50%;
+}
+
+.advanceItem * {
+	vertical-align: middle;
+}
+
+.select {
+	margin: 0 5px;
+	border: 1px solid #888;
+	background: #34353b;
+	color: #fff;
+	padding: 3px 5px;
+	border-radius: 3px;
+}
+
+.inputNumber {
+	margin: 0 5px;
+	border: 1px solid #888;
+	width: 50px;
+	padding: 3px 5px;
+	border-radius: 3px;
+}
+
+.toggle {
+	margin-bottom: 5px;
+}

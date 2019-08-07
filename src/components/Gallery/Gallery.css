@@ -1,0 +1,102 @@
+.container {
+	padding: 15px;
+	display: flex;
+}
+
+.coverWrap {
+	width: 252px;
+	/* max-height: 357px; */
+}
+
+.cover {
+	width: 252px;
+	border: 1px solid #000;
+	display: block;
+}
+
+.meta {
+	width: 250px;
+	padding: 10px 15px;
+	border-right: 1px solid #000;
+}
+
+.metaSingleItem {
+	margin-bottom: 10px;
+	text-align: center;
+}
+
+.metaItem {
+	margin-bottom: 5px;
+	text-align: center;
+	display: flex;
+}
+
+.metaLabel {
+	text-align: left;
+	font-weight: bold;
+	width: 80px;
+	flex: none;
+	display: block;
+}
+
+.metaValue {
+	text-align: left;
+	flex: auto;
+	display: block;
+}
+
+.category {
+	composes: name from '../SearchBox/SearchBox.css';
+
+	margin: 0 auto;
+	width: 130px;
+}
+
+.main {
+	padding: 10px 0 10px 15px;
+	flex: 1;
+}
+
+.header {
+	padding-bottom: 10px;
+	border-bottom: 1px solid #000;
+}
+
+.title {
+	font-weight: 400;
+	margin: 0 0 5px;
+}
+
+.subtitle {
+	font-weight: 400;
+	margin: 5px 0;
+}
+
+.tags {
+	padding-top: 10px;
+}
+
+.tagLine {
+	display: flex;
+	margin: 5px 0;
+}
+
+.tagType {
+	width: 60px;
+	margin-right: 5px;
+	text-align: right;
+	line-height: 24px;
+}
+
+.tagList {
+	flex: 1;
+}
+
+.tagList a {
+	display: inline-block;
+	border: 1px solid #888;
+	border-radius: 3px;
+	padding: 2px 6px;
+	text-decoration: none;
+	margin-right: 5px;
+}

@@ -1,0 +1,33 @@
+body {
+	margin: 0;
+	background: #34353b;
+	color: #f1f1f1;
+	font-size: 13px;
+	padding: 10px;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+a {
+	text-decoration: underline;
+	color: #ddd;
+	cursor: pointer;
+}
+
+a:hover {
+	color: #eee;
+}
+
+.container {
+	min-width: 720px;
+	max-width: 1250px;
+	margin: 0 auto;
+}
+
+.total {
+	text-align: center;
+	font-size: 0.9em;
+	font-style: italic;
+}

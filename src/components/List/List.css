@@ -1,0 +1,14 @@
+.container {
+	border: 1px solid #000;
+	/* margin-top: 30px; */
+	border-radius: 5px;
+	background: #4f535b;
+}
+
+.loading {
+	opacity: 0.5;
+}
+
+.item {
+	border-bottom: 1px solid #000;
+} 

@@ -1,0 +1,26 @@
+.star {
+	margin-right: 0.7em;
+	display: inline-block;
+	position: relative;
+	transform: scale(1.5) translateY(-0.125em);
+	transform-origin: left;
+	color: #999;
+	vertical-align: middle;
+}
+
+.star:before {
+	content: '★';
+}
+
+.star.full {
+    color: #fdd546;
+}
+
+.star.half:after {
+    content: '★';
+    color: #fdd546;
+	position: absolute;
+	left: 0;
+	right: 50%;
+    overflow: hidden;
+}

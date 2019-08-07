@@ -1,0 +1,27 @@
+.container {
+	display: inline-block;
+	margin: 0 auto;
+	width: 100%;
+	text-align: center;
+}
+
+.container :global(a) {
+	padding: 3px 15px;
+	display: inline-block;
+	text-decoration: none;
+	border: 1px solid #000;
+	background: #4f535b;
+}
+
+.container :global(a + a) {
+	border-left: none;
+}
+
+.disabled {
+	pointer-events: none;
+}
+
+.active {
+	font-weight: bold;
+	color: #fff;
+}

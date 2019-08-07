@@ -1,12 +1,25 @@
 module.exports = {
     "env": {
         "es6": true,
-        "node": true
+        "node": true,
+        "browser": true
     },
     "parserOptions": {
         "ecmaVersion": 2018,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true,
+            "modules": true,
+        }
     },
-    "extends": "eslint:recommended",
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended",
+    ],
+    "plugins": [
+        "react",
+        "react-hooks"
+    ],
     "rules": {
         "indent": [
             "error",
@@ -29,6 +42,15 @@ module.exports = {
         ],
         "no-param-reassign": [
             "error"
+        ],
+        "react/prop-types": [
+            "off"
+        ],
+        "react-hooks/rules-of-hooks": [
+            "error"
+        ],
+        "react-hooks/exhaustive-deps": [
+            "warn"
         ],
     }
 };
