@@ -22,7 +22,10 @@ const uploaderList = async (req, res) => {
 		'SELECT * FROM gallery WHERE expunged = 0 AND uploader = ? ORDER BY posted DESC LIMIT ? OFFSET ?',
 		[uploader, limit, (page - 1) * limit]
 	);
-	const { total } = (await conn.query('SELECT FOUND_ROWS() AS total'))[0];
+	const { total } = (await conn.query(
+		'SELECT COUNT(*) AS total FROM gallery WHERE expunged = 0 AND uploader = ?',
+		[uploader, limit, (page - 1) * limit]
+	))[0];
 
 	if (!result.length) {
 		conn.destroy();

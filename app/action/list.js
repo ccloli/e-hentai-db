@@ -16,10 +16,10 @@ const list = async (req, res) => {
 	const conn = await new ConnectDB().connect();
 
 	const result = await conn.query(
-		'SELECT SQL_CALC_FOUND_ROWS * FROM gallery WHERE expunged = 0 ORDER BY posted DESC LIMIT ? OFFSET ?',
+		'SELECT * FROM gallery WHERE expunged = 0 ORDER BY posted DESC LIMIT ? OFFSET ?',
 		[limit, (page - 1) * limit]
 	);
-	const { total } = (await conn.query('SELECT FOUND_ROWS() AS total'))[0];
+	const { total } = (await conn.query('SELECT COUNT(*) AS total FROM gallery WHERE expunged = 0'))[0];
 
 	if (!result.length) {
 		conn.destroy();

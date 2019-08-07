@@ -103,15 +103,6 @@ const search = async (req, res) => {
 		table = 'gallery';
 	}
 
-	// table = conn.connection.format(
-	// 	`gallery INNER JOIN (
-	// 			SELECT a.*, COUNT(a.gid) AS count FROM gid_tid AS a INNER JOIN (
-	// 				SELECT id FROM tag WHERE name IN (?)
-	// 			) AS b ON a.tid = b.id GROUP BY a.gid HAVING count = ? ORDER BY NULL
-	// 		) AS t ON gallery.gid = t.gid`,
-	// 	[tags, tags.length]
-	// );
-
 	const query = [
 		!expunged && 'expunged = 0',
 		cats.length && cats.length !== 10 && conn.connection.format('category IN (?)', [cats]),
@@ -130,15 +121,11 @@ const search = async (req, res) => {
 		).join(' AND '),
 	].filter(e => e).join(' AND ');
 
-	console.log(
-		`SELECT SQL_CALC_FOUND_ROWS gallery.* FROM ${table}
-			WHERE ${query} ORDER BY posted DESC LIMIT ? OFFSET ?`);
 	const result = await conn.query(
-		`SELECT SQL_CALC_FOUND_ROWS gallery.* FROM ${table}
-			WHERE ${query} ORDER BY posted DESC LIMIT ? OFFSET ?`,
+		`SELECT gallery.* FROM ${table} WHERE ${query} ORDER BY gallery.posted DESC LIMIT ? OFFSET ?`,
 		[limit, (page - 1) * limit]
 	);
-	const { total } = (await conn.query('SELECT FOUND_ROWS() AS total'))[0];
+	const { total } = (await conn.query(`SELECT COUNT(*) AS total FROM ${table} WHERE ${query}`))[0];
 
 	if (!result.length) {
 		conn.destroy();
