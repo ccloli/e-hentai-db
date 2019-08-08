@@ -7,6 +7,7 @@
   "scripts": {
     "start": "node index.js",
     "import": "node import.js",
+    "lint": "eslint src/**/*.js app/**/*.js",
     "build": "webpack -p --env.prod --progress",
     "dev": "webpack-dev-server --inline --progress -d --watch --hot",
     "test": "echo \"Error: no test specified\" && exit 1"
