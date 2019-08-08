@@ -39,10 +39,14 @@ const Pager = ({ page, total, onChange }) => {
 				<a
 					className={[
 						e === page ? styles.active : '',
-						e === page || e === '...' ? styles.disabled : ''
+						e === page ? styles.disabled : ''
 					].join(' ')}
-					disabled={e === page || e === '...'}
-					onClick={() => onChange(e)}
+					disabled={e === page}
+					onClick={() =>
+						e === '...'
+							? onChange(Math.min(Math.max(1, prompt(`Jump to: (1-${total})`) || page), total))
+							: onChange(e)
+					}
 					key={i}>
 					{e}
 				</a>
