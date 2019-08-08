@@ -2,6 +2,8 @@ const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const TerserJSPlugin = require('terser-webpack-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 // const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 module.exports = ({ prod = false } = {}) => ({
@@ -46,7 +48,9 @@ module.exports = ({ prod = false } = {}) => ({
 					{
 						loader: 'css-loader',
 						options: {
-							modules: true,
+							modules: {
+								localIdentName: '[hash:base64:8]'
+							},
 							importLoaders: 1
 						}
 					}
@@ -71,6 +75,7 @@ module.exports = ({ prod = false } = {}) => ({
 	],
 	...(prod ? {
 		optimization: {
+			minimizer: [new TerserJSPlugin(), new OptimizeCSSAssetsPlugin()],
 			splitChunks: {
 				cacheGroups: {
 					commons: {
