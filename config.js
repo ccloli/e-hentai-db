@@ -7,4 +7,6 @@ module.exports = {
 	port: 8880,
 	cors: false,
 	corsOrigin: '*',
+	webui: false,
+	webuiPath: 'dist',
 };
