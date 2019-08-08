@@ -15,7 +15,7 @@ Just another E-Hentai metadata database
 1. `git clone` the repo
 
 2. Run `npm i --production` in the repo directory to install dependencies
-    - If you want to contribute it in local, use `npm i` directly
+    - If you want to build Web UI, use `npm i` directly, then run `npm run build`, the static Web UI files will be in `/dist` directory
 
 3. Download `gdata.json` from [E-Hentai Forums](https://forums.e-hentai.org/index.php?s=&showtopic=201268&view=findpost&p=5474857) and place it into the repo directory
 
@@ -194,7 +194,7 @@ Do not cancel when importing, as the import script doesn't support resume import
 Try adding indexes if you want
 
 ```sql
-ALTER TABLE `gid_tid` ADD INDEX(`gid`);
+ALTER TABLE `gid_tid` ADD UNIQUE(`gid`, `tid`);
 ALTER TABLE `gid_tid` ADD INDEX(`tid`);
 ALTER TABLE `tag` ADD UNIQUE(`name`);
 ALTER TABLE `gallery` ADD INDEX(`category`);
@@ -221,12 +221,20 @@ I've little knowledge with database, you can change `struct.sql` to use InnoDB o
 
 Try `npm start &`, or use `PM2` or `forever` to keep it running in background
 
+### Web UI is not included in git repository  
+
+They may in GitHub release page, but if it's not here, you can build it by yourself, just run as simple as `npm i` then `npm run build`, and set `webui` to `true` in `config.js`.
+
+### Why React, React Router, Moment.js ... are in `devDependencies`?
+
+I prefer it's a Node.js project, and Web UI is just an optional function, also you can grab distributed Web UI files without building it. Whether you need Web UI or not, the front-end libraries are not touched when you setting up the server, as they've been packaged into distributed files.
+
 
 ## Todos (or not to do)
 
 - [X] Advanced search (tags, category, uploader, keyword in one search)
 
-- [ ] Web UI
+- [X] Web UI
 
 - [ ] Torrent hashes
 
