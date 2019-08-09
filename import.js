@@ -22,7 +22,7 @@ class Import {
 	query(...args) {
 		return new Promise((resolve, reject) => {
 			try {
-				this.connection.query(...args, (error, results, fields) => {
+				this.connection.query(...args, (error, results) => {
 					if (error) {
 						reject(error);
 						return;
@@ -67,6 +67,14 @@ class Import {
 		});
 	}
 
+	loadTags() {
+		return this.query('SELECT * FROM tag').then((data) => {
+			const result = {};
+			data.forEach(e => result[e.name] = e.id);
+			return result;
+		});
+	}
+
 	async run() {
 		const { tagMap, connection } = this;
 
@@ -75,7 +83,7 @@ class Import {
 
 		const data = await this.readFile();
 		// prefer to insert the smaller galleries first
-		const ids = Object.keys(data).sort((a, b) => a - b);
+		let ids = Object.keys(data).sort((a, b) => a - b);
 		const length = ids.length;
 
 		const lt = new Date();
@@ -92,7 +100,20 @@ class Import {
 
 			await this.query('SET NAMES UTF8MB4');
 
-			let index = 0;
+			this.tagMap = await this.loadTags();
+			const { gid: lastId = 0 } = (await this.query('SELECT gid FROM gallery ORDER BY gid DESC LIMIT 1 OFFSET 0'))[0] || {};
+
+			let index = ids.findIndex(e => e > lastId);
+			if (index) {
+				console.log(`got last inserted gid = ${lastId}`);
+				if (index < 0) {
+					ids = [];
+					console.log('all fields in gdata.json has been imported');
+				}
+				else {
+					ids = ids.slice(index);
+				}
+			}
 			for (let id of ids) {
 				index++;
 				const item = data[id];
@@ -127,7 +148,7 @@ class Import {
 				}
 			}
 			
-			console.log(`inserts complete`);
+			console.log('inserts complete');
 			const nt = new Date();
 			console.log(`finished at ${nt}, total time ${nt - ct}ms`);
 
