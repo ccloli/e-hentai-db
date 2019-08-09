@@ -23,7 +23,8 @@ Just another E-Hentai metadata database
 
 5. Edit `config.js`, set database username, password, database name, etc.
 
-6. Run `npm run import` to import the JSON file into your databse
+6. Run `npm run import [file=gdata.json]` to import the JSON file into your database
+    - If you want to update to latest galleries, run `npm run sync [host=e-hentai.org]`
 
 7. Wait a few minutes, as it has about 800,000 records (on my PC it takes 260s, and on my server it's 850s)
 
