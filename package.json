@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "import": "node import.js",
+    "import": "node ./scripts/import.js",
     "lint": "eslint src/**/*.js app/**/*.js",
     "build": "webpack -p --env.prod --progress",
     "dev": "webpack-dev-server --inline --progress -d --watch --hot",

@@ -1,6 +1,6 @@
 const mysql = require('mysql');
 const fs = require('fs');
-const config = require('./config');
+const config = require('../config');
 
 class Import {
 	constructor() {
@@ -17,6 +17,7 @@ class Import {
 		this.query = this.query.bind(this);
 		this.readFile = this.readFile.bind(this);
 		this.run = this.run.bind(this);
+		this.filePath = process.argv[2] || './gdata.json';
 	}
 
 	query(...args) {
@@ -41,7 +42,7 @@ class Import {
 				// work around with kMaxLength
 				let data = {};
 				let lastChunk = '';
-				const rstream = fs.createReadStream('./gdata.json', 'utf8');
+				const rstream = fs.createReadStream(this.filePath, 'utf8');
 
 				const parseChunk = (chunk) => {
 					const result = chunk.match(/^{?"(\d+)":\s*?({[\s\S]+?})}?$/);
