@@ -4,3 +4,4 @@ gdata.json
 *.swp
 *.tmp
 dist/
+.cookies
