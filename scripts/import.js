@@ -52,7 +52,7 @@ class Import {
 
 				rstream.on('error', reject);
 				rstream.on('data', (chunk) => {
-					const parts = (lastChunk + chunk).split(/,\s(?="\d+":)/);
+					const parts = (lastChunk + chunk).split(/,\s?(?="\d+":)/);
 					// last part may incomplete
 					lastChunk = parts.pop();
 					parts.forEach(parseChunk);
