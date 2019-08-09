@@ -5,11 +5,17 @@ const { categoryMap } = require('../util/category');
 
 const search = async (req, res) => {
 	let {
-		keyword = '', category = '', expunged = 0, minpage = 0, maxpage = 0, minrating = 0, page = 1, limit = 10
+		keyword = '', category = '', expunged = 0, minpage = 0, maxpage = 0, minrating = 0,
+		mindate = 0, maxdate = 0,page = 1, limit = 10
 	} = Object.assign({}, req.params, req.query);
 
 	[page, limit] = [page, limit].map(e => e <= 0 ? 1 : parseInt(e, 10));
-	[expunged, minpage, maxpage, minrating] = [expunged, minpage, maxpage, minrating].map(e => parseInt(e, 10));
+	[
+		expunged, minpage, maxpage, minrating, mindate, maxdate
+	] = [
+		expunged, minpage, maxpage, minrating, mindate, maxdate
+	].map(e => parseInt(e, 10));
+
 	if (limit > 25) {
 		return res.json(getResponse(null, 400, 'limit is too large'));
 	}
@@ -111,6 +117,8 @@ const search = async (req, res) => {
 		minpage && conn.connection.format('filecount >= ?', [minpage]),
 		maxpage && conn.connection.format('filecount <= ?', [maxpage]),
 		minrating && conn.connection.format('rating >= ?', [minrating - 0.5]),
+		mindate && conn.connection.format('posted >= ?', [mindate]),
+		maxdate && conn.connection.format('posted <= ?', [maxdate]),
 		// MariaDB can use `RLIKE '(?=keywordA)(?=keywordB)...'` to optimize the performance
 		// but looks like MySQL 5+ doesn't support positive look ahead
 		keywords.inc.length && keywords.inc.map(
