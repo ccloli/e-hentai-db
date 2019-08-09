@@ -242,7 +242,7 @@ I prefer it's a Node.js project, and Web UI is just an optional function, also y
 
 - [ ] Torrent hashes
 
-- [ ] Update to latest galleries
+- [X] Update to latest galleries
 
 
 ## Thanks
