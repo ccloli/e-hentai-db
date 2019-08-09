@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import categoryList from '../../util/category';
 import styles from './SearchBox.css';
+import moment from 'moment';
 
 const SearchBox = ({ options, onSearch }) => {
 	const [category, setCategory] = useState(+options.category || 1023);
@@ -10,6 +11,8 @@ const SearchBox = ({ options, onSearch }) => {
 	const [maxpage, setMaxPage] = useState(options.maxpage || '');
 	const [minrating, setMinRating] = useState(options.minrating || '');
 	const [limit, setLimit] = useState(options.limit || 10);
+	const [mindate, setMinDate] = useState(options.mindate || '');
+	const [maxdate, setMaxDate] = useState(options.maxdate || '');
 	const [showAdvance, setShowAdvance] = useState(+options.advance || 0);
 
 	const updateCategory = (event) => {
@@ -41,6 +44,14 @@ const SearchBox = ({ options, onSearch }) => {
 		setLimit(+event.target.value);
 	};
 
+	const updateMinDate = (event) => {
+		setMinDate(Math.floor(moment(event.target.value).valueOf() / 1000));
+	};
+
+	const updateMaxDate = (event) => {
+		setMaxDate(Math.floor(moment(event.target.value).valueOf() / 1000));
+	};
+
 	const toggleAdvance = () => {
 		setShowAdvance(!showAdvance);
 	};
@@ -56,6 +67,8 @@ const SearchBox = ({ options, onSearch }) => {
 				maxpage,
 				minrating,
 				limit,
+				mindate,
+				maxdate,
 				advance: +showAdvance,
 			});
 		}
@@ -69,6 +82,8 @@ const SearchBox = ({ options, onSearch }) => {
 		setMaxPage(options.maxpage || '');
 		setMinRating(options.minrating || '');
 		setLimit(options.limit || 10);
+		setMinDate(options.mindate || '');
+		setMaxDate(options.maxdate || '');
 		setShowAdvance(+options.advance || 0);
 	}, [options]);
 
@@ -120,6 +135,14 @@ const SearchBox = ({ options, onSearch }) => {
 						and
 						<input type="number" className={styles.inputNumber} value={maxpage} onChange={updateMaxPage} />
 						pages
+					</label>
+					<label className={styles.advanceItem}>
+						Post after
+						<input type="datetime-local" className={styles.date} value={mindate ? moment(mindate * 1000).format('YYYY-MM-DDTHH:mm') : ''} onChange={updateMinDate} />
+					</label>
+					<label className={styles.advanceItem}>
+						Post before
+						<input type="datetime-local" className={styles.date} value={maxdate ? moment(maxdate * 1000).format('YYYY-MM-DDTHH:mm') : ''} onChange={updateMaxDate} />
 					</label>
 				</div>
 			) : null}

@@ -109,6 +109,14 @@
 	border-radius: 3px;
 }
 
+.date {
+	margin: 0 5px;
+	border: 1px solid #888;
+	width: 200px;
+	padding: 3px 5px;
+	border-radius: 3px;
+}
+
 .toggle {
 	margin-bottom: 5px;
 }
