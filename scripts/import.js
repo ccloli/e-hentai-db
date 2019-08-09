@@ -147,13 +147,22 @@ class Import {
 				}
 				else if (posted > galleries[gid]) {
 					inserted++;
+					const curTags = (await this.query('SELECT tid FROM gid_tid WHERE gid = ?', [gid])).map(e => e.tid);
+					const tids = tags.map(e => tagMap[e]);
+					const addTids = tids.filter(e => curTags.indexOf(e) < 0);
+					const delTids = curTags.filter(e => tids.indexOf(e) < 0);
 					queries.push(this.query('UPDATE gallery SET ? WHERE gid = ?', [{
 						token, archiver_key, title, title_jpn, category, thumb, uploader,
 						posted, filecount, filesize, expunged, rating, torrentcount
 					}, gid]));
-					if (newTags.length) {
+					if (addTids.length) {
 						queries.push(this.query('INSERT INTO gid_tid (gid, tid) VALUES ?', [
-							newTags.map(e => [+id, tagMap[e]])
+							addTids.map(e => [+id, e])
+						]));
+					}
+					if (delTids.length) {
+						queries.push(this.query('DELETE FROM gid_tid WHERE (gid, tid) IN (?)', [
+							delTids.map(e => [+id, e])
 						]));
 					}
 				}
