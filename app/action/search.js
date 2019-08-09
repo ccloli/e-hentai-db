@@ -50,7 +50,7 @@ const search = async (req, res) => {
 		return pre.substr(0, cur.index) + pre.substr(cur.index + cur[0].length);
 	}, keyword);
 
-	const rawTags = matchExec(keyword, /(?:^|\s)(\S+?:(?:"[\s\S]+?\$"|.+?\$))(?=\s|$)/g);
+	const rawTags = matchExec(keyword, /(?:^|\s)(\S*?:?(?:"[\s\S]+?\$"|.+?\$))(?=\s|$)/g);
 	const tags = { inc: [], exc: [] };
 	keyword = rawTags.reduceRight((pre, cur) => {
 		const { target, value } = getTargetValue(cur[1].replace(/"|\$/g, ''), tags);
