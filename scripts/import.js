@@ -76,6 +76,14 @@ class Import {
 		});
 	}
 
+	loadGalleries() {
+		return this.query('SELECT gid, posted FROM gallery').then((data) => {
+			const result = {};
+			data.forEach(e => result[e.gid] = e.posted);
+			return result;
+		});
+	}
+
 	async run() {
 		const { tagMap, connection } = this;
 
@@ -102,19 +110,10 @@ class Import {
 			await this.query('SET NAMES UTF8MB4');
 
 			this.tagMap = await this.loadTags();
-			const { gid: lastId = 0 } = (await this.query('SELECT gid FROM gallery ORDER BY gid DESC LIMIT 1 OFFSET 0'))[0] || {};
+			const galleries = await this.loadGalleries();
 
-			let index = ids.findIndex(e => e > lastId);
-			if (index) {
-				console.log(`got last inserted gid = ${lastId}`);
-				if (index < 0) {
-					ids = [];
-					console.log('all fields in gdata.json has been imported');
-				}
-				else {
-					ids = ids.slice(index);
-				}
-			}
+			let index = 0;
+			let inserted = 0;
 			for (let id of ids) {
 				index++;
 				const item = data[id];
@@ -134,22 +133,40 @@ class Import {
 				}
 
 				const queries = []; 
-				queries.push(this.query('INSERT INTO gallery SET ?', {
-					gid, token, archiver_key, title, title_jpn, category, thumb, uploader,
-					posted, filecount, filesize, expunged, rating, torrentcount
-				}));
-				if (tags.length) {
-					queries.push(this.query('INSERT INTO gid_tid (gid, tid) VALUES ?', [
-						tags.map(e => [+id, tagMap[e]])
-					]));
+				if (!galleries[gid]) {
+					inserted++;
+					queries.push(this.query('INSERT INTO gallery SET ?', {
+						gid, token, archiver_key, title, title_jpn, category, thumb, uploader,
+						posted, filecount, filesize, expunged, rating, torrentcount
+					}));
+					if (tags.length) {
+						queries.push(this.query('INSERT INTO gid_tid (gid, tid) VALUES ?', [
+							tags.map(e => [+id, tagMap[e]])
+						]));
+					}
+				}
+				else if (posted > galleries[gid]) {
+					inserted++;
+					queries.push(this.query('UPDATE gallery SET ? WHERE gid = ?', [{
+						token, archiver_key, title, title_jpn, category, thumb, uploader,
+						posted, filecount, filesize, expunged, rating, torrentcount
+					}, gid]));
+					if (newTags.length) {
+						queries.push(this.query('INSERT INTO gid_tid (gid, tid) VALUES ?', [
+							newTags.map(e => [+id, tagMap[e]])
+						]));
+					}
+				}
+				else {
+					continue;
 				}
 				await Promise.all(queries);
-				if (index % 1000 === 0 || index === length) {
+				if (inserted % 1000 === 0 || index === length) {
 					console.log(`inserted gid = ${id} (${index}/${length})`);
 				}
 			}
 			
-			console.log('inserts complete');
+			console.log(`inserts complete, inserted ${inserted} galleries`);
 			const nt = new Date();
 			console.log(`finished at ${nt}, total time ${nt - ct}ms`);
 
