@@ -187,7 +187,10 @@ swapon swapfile
 ![](https://user-images.githubusercontent.com/8115912/62408371-c0a4fb80-b5fa-11e9-8f17-f15b2c4ab505.png)
 
 ### I got duplicate records when re-importing  
-Do not cancel when importing, as the import script doesn't support resume import, so you'll have to truncate all table or delete them and create a new one
+
+~~Do not cancel when importing, as the import script doesn't support resume import, so you'll have to truncate all table or delete them and create a new one~~
+
+Now the import script supports resume importing, you can cancel your imports and run `npm run import` at any time, it'll start from your last record
 
 ### The query speed is still too slow when querying multiple tags
 
