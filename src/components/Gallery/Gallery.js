@@ -103,9 +103,7 @@ const Gallery = ({
 									<a
 										key={tag}
 										onClick={() => onSearch({
-											keyword: type === 'misc'
-												? tag :
-												`${type}:${/\s/.test(tag) ? `"${tag}$"` : `${tag}$`}`
+											keyword: `${type === 'misc' ? '' : `${type}:`}${/\s/.test(tag) ? `"${tag}$"` : `${tag}$`}`
 										})}>
 										{tag}
 									</a>
