@@ -85,7 +85,7 @@ class Import {
 	}
 
 	async run() {
-		const { tagMap, connection } = this;
+		const { connection } = this;
 
 		const t = new Date();
 		console.log(`loading gdata.json at ${t}`);
@@ -114,6 +114,7 @@ class Import {
 
 			let index = 0;
 			let inserted = 0;
+			const { tagMap } = this;
 			for (let id of ids) {
 				index++;
 				const item = data[id];
