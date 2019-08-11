@@ -5,3 +5,4 @@ gdata.json
 *.tmp
 dist/
 .cookies
+.proxies
