@@ -47,7 +47,7 @@ class Sync {
 	}
 
 	async getLastPosted() {
-		const { posted = 0 } = (await this.query('SELECT posted FROM gallery ORDER BY posted DESC LIMIT 1 OFFSET 0'))[0] || {};
+		const { posted = 0 } = (await this.query('SELECT posted FROM gallery WHERE bytorrent = 0 ORDER BY posted DESC LIMIT 1 OFFSET 0'))[0] || {};
 		return posted;
 	}
 

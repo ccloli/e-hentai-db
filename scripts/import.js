@@ -77,7 +77,7 @@ class Import {
 	}
 
 	loadGalleries() {
-		return this.query('SELECT gid, posted FROM gallery').then((data) => {
+		return this.query('SELECT gid, posted, bytorrent FROM gallery').then((data) => {
 			const result = {};
 			data.forEach(e => result[e.gid] = e.posted);
 			return result;
@@ -146,7 +146,7 @@ class Import {
 						]));
 					}
 				}
-				else if (posted > galleries[gid]) {
+				else if (posted > galleries[gid] || galleries.bytorrent) {
 					inserted++;
 					const curTags = (await this.query('SELECT tid FROM gid_tid WHERE gid = ?', [gid])).map(e => e.tid);
 					const tids = tags.map(e => tagMap[e]);
@@ -154,7 +154,7 @@ class Import {
 					const delTids = curTags.filter(e => tids.indexOf(e) < 0);
 					queries.push(this.query('UPDATE gallery SET ? WHERE gid = ?', [{
 						token, archiver_key, title, title_jpn, category, thumb, uploader,
-						posted, filecount, filesize, expunged, rating, torrentcount
+						posted, filecount, filesize, expunged, rating, torrentcount, bytorrent: 0
 					}, gid]));
 					if (addTids.length) {
 						queries.push(this.query('INSERT INTO gid_tid (gid, tid) VALUES ?', [
