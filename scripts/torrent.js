@@ -33,7 +33,7 @@ class TorrentImport {
 		this.cookies = this.loadCookies();
 		this.proxies = this.loadProxies();
 		this.proxyList = [];
-		this.limit = 500;
+		this.limit = 5;
 	}
 
 	initConnection() {
