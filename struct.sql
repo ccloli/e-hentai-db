@@ -14,8 +14,11 @@ CREATE TABLE IF NOT EXISTS `gallery` (
   `filecount` int(11) NOT NULL,
   `filesize` bigint(20) NOT NULL,
   `expunged` tinyint(1) NOT NULL,
+  `removed` tinyint(1) NOT NULL DEFAULT 0,
   `rating` char(4) NOT NULL,
   `torrentcount` int(11) NOT NULL,
+  `root_gid` int(11) DEFAULT NULL,
+  `bytorrent` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`gid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
@@ -29,3 +32,14 @@ CREATE TABLE IF NOT EXISTS `tag` (
   `name` varchar(200) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `torrent` (
+  `id` int(11) NOT NULL,
+  `gid` int(11) NOT NULL,
+  `name` varchar(300) NOT NULL,
+  `hash` char(40) NOT NULL,
+  `addedstr` varchar(20) DEFAULT NULL,
+  `fsizestr` varchar(15) DEFAULT NULL,
+  `uploader` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
