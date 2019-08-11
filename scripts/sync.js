@@ -183,11 +183,11 @@ class Sync {
 				page++;
 			}
 
-			console.log(`got ${list.length} new galleries of ${list[0][0]} to ${list.slice(-1)[0][0]}`);
 			if (!list.length) {
 				console.log('no new gallery available');
 				return;
 			}
+			console.log(`got ${list.length} new galleries of ${list[0][0]} to ${list.slice(-1)[0][0]}`);
 
 			let result = {};
 			while (list.length) {
