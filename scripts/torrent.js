@@ -306,6 +306,8 @@ class TorrentImport {
 									name: e.name
 								}])
 							));
+							// set exist root_gid galleries to replaced, this improves search performance
+							await this.query('UPDATE gallery SET replaced = 1 WHERE root_gid = ?', [gid]);
 							await this.query('UPDATE gallery SET root_gid = ? WHERE gid = ?', [gid, item.gid]);
 							if (+gid !== +item.gid) {
 								console.log(`*** root gid of ${item.gid} is ${gid}`);
