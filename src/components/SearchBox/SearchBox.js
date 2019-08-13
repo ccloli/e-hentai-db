@@ -7,6 +7,8 @@ const SearchBox = ({ options, onSearch }) => {
 	const [category, setCategory] = useState(+options.category || 1023);
 	const [keyword, setKeyword] = useState(options.keyword || '');
 	const [expunged, setExpunged] = useState(+options.expunged || 0);
+	const [replaced, setReplaced] = useState(+options.replaced || 0);
+	const [removed, setRemoved] = useState(+options.removed || 0);
 	const [minpage, setMinPage] = useState(options.minpage || '');
 	const [maxpage, setMaxPage] = useState(options.maxpage || '');
 	const [minrating, setMinRating] = useState(options.minrating || '');
@@ -26,6 +28,14 @@ const SearchBox = ({ options, onSearch }) => {
 
 	const updateExpunged = (event) => {
 		setExpunged(+event.target.checked);
+	};
+
+	const updateReplaced = (event) => {
+		setReplaced(+event.target.checked);
+	};
+
+	const updateRemoved = (event) => {
+		setRemoved(+event.target.checked);
 	};
 
 	const updateMinRating = (event) => {
@@ -110,6 +120,14 @@ const SearchBox = ({ options, onSearch }) => {
 				<div className={styles.advance}>
 					<label className={styles.advanceItem}>
 						<input type="checkbox" checked={expunged} onChange={updateExpunged} />
+						Show Expunged
+					</label>
+					<label className={styles.advanceItem}>
+						<input type="checkbox" checked={removed} onChange={updateRemoved} />
+						Show Expunged
+					</label>
+					<label className={styles.advanceItem}>
+						<input type="checkbox" checked={replaced} onChange={updateReplaced} />
 						Show Expunged
 					</label>
 					<label className={styles.advanceItem}>
