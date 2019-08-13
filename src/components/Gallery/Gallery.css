@@ -9,9 +9,11 @@
 }
 
 .cover {
-	width: 252px;
+	max-width: 252px;
+	max-height: 357px;
 	border: 1px solid #000;
 	display: block;
+	margin: 0 auto;
 }
 
 .meta {
