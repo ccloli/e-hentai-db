@@ -124,11 +124,11 @@ const SearchBox = ({ options, onSearch }) => {
 					</label>
 					<label className={styles.advanceItem}>
 						<input type="checkbox" checked={removed} onChange={updateRemoved} />
-						Show Expunged
+						Show Removed
 					</label>
 					<label className={styles.advanceItem}>
 						<input type="checkbox" checked={replaced} onChange={updateReplaced} />
-						Show Expunged
+						Show Replaced
 					</label>
 					<label className={styles.advanceItem}>
 						Show
