@@ -8,7 +8,7 @@ import Rating from '../Rating';
 import parseEntity from '../../util/parseEntity';
 
 const Gallery = ({
-	thumb, category, uploader, posted, expunged, filesize, filecount,
+	thumb, category, uploader, posted, expunged, removed, replaced, filesize, filecount,
 	title, title_jpn, rating, tags = [], gid, token, onSearch = () => {}
 }) => {
 	const tagList = {};
@@ -58,9 +58,15 @@ const Gallery = ({
 					</span>
 				</div>
 				<div className={styles.metaItem}>
-					<span className={styles.metaLabel}>Expunged:</span>
+					<span className={styles.metaLabel}>Visible:</span>
 					<span className={styles.metaValue}>
-						{expunged ? 'Yes' : 'No'}
+						{
+							expunged ? 'No (Expunged)'
+								: removed ? 'No (Removed)'
+									: replaced ? 'No (Replaced)'
+										: category.toLowerCase() === 'private' ? 'No (Privated)'
+											: 'Yes'
+						}
 					</span>
 				</div>
 				<div className={styles.metaItem}>
