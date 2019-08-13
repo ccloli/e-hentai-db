@@ -18,6 +18,7 @@ class Import {
 		this.readFile = this.readFile.bind(this);
 		this.run = this.run.bind(this);
 		this.filePath = process.argv[2] || './gdata.json';
+		this.force = process.argv.indexOf('-f') >= 0;
 	}
 
 	query(...args) {
@@ -121,8 +122,11 @@ class Import {
 				// item may have other keys like `error`
 				const {
 					tags, gid, token, archiver_key, title, title_jpn, category, thumb, uploader,
-					posted, filecount, filesize, expunged, rating, torrentcount
+					posted, filecount, filesize, expunged, rating, torrentcount, error
 				} = item;
+				if (error) {
+					continue;
+				}
 
 				const newTags = tags.filter(e => !tagMap[e]);
 				if (newTags.length) {
@@ -146,7 +150,7 @@ class Import {
 						]));
 					}
 				}
-				else if (posted > galleries[gid] || galleries.bytorrent) {
+				else if (this.force || posted > galleries[gid] || galleries.bytorrent) {
 					inserted++;
 					const curTags = (await this.query('SELECT tid FROM gid_tid WHERE gid = ?', [gid])).map(e => e.tid);
 					const tids = tags.map(e => tagMap[e]);
