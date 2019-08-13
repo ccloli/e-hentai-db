@@ -116,7 +116,7 @@ const search = async (req, res) => {
 		uploader.exc.length && conn.connection.format('uploader NOT IN (?)', [uploader.exc]),
 		minpage && conn.connection.format('filecount >= ?', [minpage]),
 		maxpage && conn.connection.format('filecount <= ?', [maxpage]),
-		minrating && conn.connection.format('rating >= ?', [minrating - 0.5]),
+		minrating && minrating > 1 && conn.connection.format('rating >= ?', [minrating - 0.5]),
 		mindate && conn.connection.format('posted >= ?', [mindate]),
 		maxdate && conn.connection.format('posted <= ?', [maxdate]),
 		// MariaDB can use `RLIKE '(?=keywordA)(?=keywordB)...'` to optimize the performance
