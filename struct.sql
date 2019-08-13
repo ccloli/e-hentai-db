@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS `gallery` (
   `filesize` bigint(20) NOT NULL,
   `expunged` tinyint(1) NOT NULL,
   `removed` tinyint(1) NOT NULL DEFAULT 0,
+  `replaced` tinyint(1) NOT NULL DEFAULT 0,
   `rating` char(4) NOT NULL,
   `torrentcount` int(11) NOT NULL,
   `root_gid` int(11) DEFAULT NULL,
