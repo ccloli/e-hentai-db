@@ -112,6 +112,7 @@ const search = async (req, res) => {
 	const query = [
 		!expunged && 'expunged = 0',
 		!removed && 'removed = 0',
+		!replaced && 'replaced = 0',
 		cats.length && cats.length !== 10 && conn.connection.format('category IN (?)', [cats]),
 		uploader.inc.length && conn.connection.format('uploader IN (?)', [uploader.inc]),
 		uploader.exc.length && conn.connection.format('uploader NOT IN (?)', [uploader.exc]),
@@ -130,23 +131,12 @@ const search = async (req, res) => {
 		).join(' AND '),
 	].filter(e => e).join(' AND ');
 
-	let select = 'SELECT gallery.*';
-	let where = 'WHERE';
-	if (!replaced) {
-		select = 'SELECT gallery.*, MAX(gallery.gid)';
-		table = `${table} GROUP BY IFNULL(gallery.root_gid, gallery.gid)`;
-		where = 'HAVING';
-	}
 	const result = await conn.query(
-		`${select} FROM ${table} ${where} ${query || 1} ORDER BY gallery.posted DESC LIMIT ? OFFSET ?`,
+		`SELECT gallery.* FROM ${table} WHERE ${query || 1} ORDER BY gallery.posted DESC LIMIT ? OFFSET ?`,
 		[limit, (page - 1) * limit]
 	);
 
-	let countTotal = `SELECT COUNT(*) AS total FROM ${table} ${where} ${query || 1}`;
-	if (!replaced) {
-		countTotal = `SELECT COUNT(*) AS total FROM (SELECT * FROM ${table} ${where} ${query || 1}) AS t`;
-	}
-	const { total } = (await conn.query(countTotal))[0];
+	const { total } = (await conn.query(`SELECT COUNT(*) AS total FROM ${table} WHERE ${query || 1}`))[0];
 
 	if (!result.length) {
 		conn.destroy();
