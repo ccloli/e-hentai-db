@@ -85,8 +85,9 @@ const search = async (req, res) => {
 				[tags.inc, tags.inc.length]
 			);
 		}
+		let excTable;
 		if (tags.exc.length) {
-			const excTable = conn.connection.format(
+			excTable = conn.connection.format(
 				`(
 					SELECT a.* FROM gid_tid AS a INNER JOIN (
 						SELECT id FROM tag WHERE name IN (?)
@@ -94,16 +95,26 @@ const search = async (req, res) => {
 				)`,
 				[tags.exc]
 			);
-			if (table) {
+			// if (table) {
+			// 	table = `gallery LEFT JOIN ${excTable} AS t ON gallery.gid = t.gid WHERE t.gid IS NULL`;
+			// }
+			// else {
+			// 	table = `(
+			// 		SELECT a.* FROM gid_tid AS a LEFT JOIN ${excTable} AS b ON a.gid = b.gid WHERE b.gid IS NULL
+			// 	)`;
+			// }
+		}
+		if (excTable && !table) {
+			table = `gallery LEFT JOIN ${excTable} AS t ON gallery.gid = t.gid`;
+		}
+		else {
+			if (excTable) {
 				table = `(
 					SELECT a.* FROM ${table} AS a LEFT JOIN ${excTable} AS b ON a.gid = b.gid WHERE b.gid IS NULL
 				)`;
 			}
-			else {
-				table = excTable;
-			}
+			table = `gallery INNER JOIN ${table} AS t ON gallery.gid = t.gid`;
 		}
-		table = `gallery INNER JOIN ${table} AS t ON gallery.gid = t.gid`;
 	}
 	else {
 		table = 'gallery';
@@ -113,6 +124,7 @@ const search = async (req, res) => {
 		!expunged && 'expunged = 0',
 		!removed && 'removed = 0',
 		!replaced && 'replaced = 0',
+		!tags.inc.length && tags.exc.length && 't.gid IS NULL',
 		cats.length && cats.length !== 10 && conn.connection.format('category IN (?)', [cats]),
 		uploader.inc.length && conn.connection.format('uploader IN (?)', [uploader.inc]),
 		uploader.exc.length && conn.connection.format('uploader NOT IN (?)', [uploader.exc]),
