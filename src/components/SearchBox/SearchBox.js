@@ -73,6 +73,8 @@ const SearchBox = ({ options, onSearch }) => {
 				category,
 				keyword,
 				expunged,
+				replaced,
+				removed,
 				minpage,
 				maxpage,
 				minrating,
@@ -88,6 +90,8 @@ const SearchBox = ({ options, onSearch }) => {
 		setCategory(+options.category || 1023);
 		setKeyword(options.keyword || '');
 		setExpunged(+options.expunged || 0);
+		setReplaced(+options.replaced || 0);
+		setRemoved(+options.removed || 0);
 		setMinPage(options.minpage || '');
 		setMaxPage(options.maxpage || '');
 		setMinRating(options.minrating || '');
