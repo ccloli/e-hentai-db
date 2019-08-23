@@ -158,7 +158,7 @@ const search = async (req, res) => {
 	}
 
 	const gids = result.map(e => e.gid);
-	const rootGids = result.map(e => e.root_gid);
+	const rootGids = result.map(e => e.root_gid).filter(e => e);
 	const gidTags = await queryTags(conn, gids);
 	const gidTorrents = await queryTorrents(conn, rootGids);
 
