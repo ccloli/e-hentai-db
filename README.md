@@ -12,6 +12,8 @@ Just another E-Hentai metadata database
 
 ## Setup & Start Up
 
+**If you just want to see the data from `gdata.json`, use `0.1.x`, and if you want to keep your gallery up-to-date, use `0.2.x`. The `master` branch and `0.3.x` and latter includes more features like torrent hashes, and it may takes a long time to sync**
+
 1. `git clone` the repo
 
 2. Run `npm i --production` in the repo directory to install dependencies
@@ -25,6 +27,10 @@ Just another E-Hentai metadata database
 
 6. Run `npm run import [file=gdata.json]` to import the JSON file into your database
     - If you want to update to latest galleries, run `npm run sync [host=e-hentai.org]`
+    - If you want to resync gallery metadatas since a few hours ago, run `npm run resync [hour=24]`
+    - If you want to mark all replaced galleries, run `npm run mark-replaced` (new galleries will mark them automatically)
+    - If you want to get torrents from all galleries, run `npm run torrent-import [host=e-hentai.org]` (USE AT YOUR OWN RISK)
+    - If you want to update torrents from torrent list, run `npm run torrent-sync [host=e-hentai.org]`
 
 7. Wait a few minutes, as it has about 800,000 records (on my PC it takes 260s, and on my server it's 850s)
 
@@ -49,29 +55,57 @@ The response type of all APIs are JSON, and follow the format below.
 `data` should normally be a metadata, or a list of metadata, or `null` if any error happens. The format of metadata is based on E-Hentai's offical gallery JSON API, you can check it on [EHWiki](https://ehwiki.org/wiki/API). But data type may be a little different from offical API, like using `int` for `posted` and `filecount` instead of `string`.
 
 ```json
-   {
-     "gid": 618395,
-     "token": "0439fa3666",
-     "archiver_key": "403565--d887c6dfe8aae79ed0071551aa1bafeb4a5ee361",
-     "title": "(Kouroumu 8) [Handful☆Happiness! (Fuyuki Nanahara)] TOUHOU GUNMANIA A2 (Touhou Project)",
-     "title_jpn": "(紅楼夢8) [Handful☆Happiness! (七原冬雪)] TOUHOU GUNMANIA A2 (東方Project)",
-     "category": "Non-H",
-     "thumb": "https://ehgt.org/14/63/1463dfbc16847c9ebef92c46a90e21ca881b2a12-1729712-4271-6032-jpg_l.jpg",
-     "uploader": "avexotsukaai",
-     "posted": 1376143500,
-     "filecount": 20,
-     "filesize": 51210504,
-     "expunged": false,
-     "rating": "4.43",
-     "torrentcount": "0",
-     "tags": [
-       "parody:touhou project",
-       "group:handful happiness",
-       "artist:nanahara fuyuki",
-       "full color",
-       "artbook"
-     ]
-   }
+    {
+        "gid": 1462447,
+        "token": "e25b826d82",
+        "archiver_key": "434919--5d5ec9b30b60eebe4c7ba5d4a893984e69a0be8d",
+        "title": "[Uousaohkoku (Uousaoh)] Ciao Ciao Buon Appetito (Kantai Collection -KanColle-) [Chinese] [Lolipoi汉化组] [Digital]",
+        "title_jpn": "[魚ウサ王国 (魚ウサ王)] ちゃおちゃおぼなぺてぃーと (艦隊これくしょん -艦これ-) [中国翻訳] [DL版]",
+        "category": "Doujinshi",
+        "thumb": "https://ehgt.org/b7/55/b755981e1070efe3c9d5d76cffe1c02743beced9-802339-1297-1831-jpg_l.jpg",
+        "uploader": "kaiwen1108",
+        "posted": 1565535124,
+        "filecount": 24,
+        "filesize": 24322346,
+        "expunged": 0,
+        "removed": 0,
+        "replaced": 0,
+        "rating": "4.88",
+        "torrentcount": 1, // useless, count it by `torrents` instead
+        "root_gid": 1462447,
+        "tags": [
+            "female:lolicon",
+            "female:twintails",
+            "language:translated",
+            "group",
+            "male:sole male",
+            "mosaic censorship",
+            "ffm threesome",
+            "female:dark skin",
+            "female:femdom",
+            "male:bondage",
+            "female:tanlines",
+            "female:shimapan",
+            "language:chinese",
+            "female:ponytail",
+            "group:uousaohkoku",
+            "artist:uousaoh",
+            "parody:kantai collection",
+            "character:teitoku",
+            "character:libeccio",
+            "character:maestrale"
+        ],
+        "torrents": [
+            {
+                "id": 685644,
+                "name": "[魚ウサ王国 (魚ウサ王)] ちゃおちゃおぼなぺてぃーと (艦隊これくしょん -艦これ-) [中国翻訳] [DL版].zip",
+                "hash": "2d68b8182e8d48b0b44af520152ee86460de6476",
+                "addedstr": "2019-08-11 14:57",
+                "fsizestr": "21.69 MB",
+                "uploader": "Superlatanium"
+            }
+        ]
+    }
 ```
 
 ### `/api/gallery/:gid/:token`
@@ -163,6 +197,8 @@ Query params:
 - `keyword`: Search keywords, split them with space `%20`
 - `category`: Gallery category, same as `/api/category`
 - `expunged`: Show expunged gallery _(default: `0`)_
+- `removed`: Show removed gallery _(default: `0`)_
+- `replaced`: Show replaced gallery _(default: `0`)_
 - `minpage`: Show gallery with page count larger than this _(default: `0`)_
 - `maxpage`: Show gallery with page count smaller than this _(default: `0`)_
 - `minrating`: Show gallery with minimal stars (includes minus half stars) _(default: `0`, <= `5`)_
@@ -240,7 +276,7 @@ I prefer it's a Node.js project, and Web UI is just an optional function, also y
 
 - [X] Web UI
 
-- [ ] Torrent hashes
+- [X] Torrent hashes
 
 - [X] Update to latest galleries
 
