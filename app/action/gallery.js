@@ -9,17 +9,22 @@ const gallery = async (req, res) => {
 
 	const conn = await new ConnectDB().connect();
 
-	const result = await conn.query('SELECT * FROM gallery WHERE gid = ? AND token = ?', [gid, token]);
-	if (!result.length) {
+	const result = (await conn.query('SELECT * FROM gallery WHERE gid = ? AND token = ?', [gid, token]))[0];
+	if (!result) {
 		conn.destroy();
 		return res.json(getResponse(null, 404, 'no gallery matches gid and token'));
 	}
 
-	const tags = await conn.query('SELECT name FROM tag WHERE id IN (SELECT tid FROM gid_tid WHERE gid = ?)', [gid]);
+	const { root_gid } = result;
+	const tags = (await queryTags(conn, [gid]))[gid] || [];
+	let torrents = [];
+	if (result.root_gid) {
+		const torrents = (await queryTorrents(conn, [root_gid]))[root_gid] || [];
+	}
 
 	conn.destroy();
 	return res.json(getResponse(
-		{ ...result[0], tags: tags.map(({ name }) => name) },
+		{ ...result, tags, torrents },
 		200,
 		'success'
 	));
