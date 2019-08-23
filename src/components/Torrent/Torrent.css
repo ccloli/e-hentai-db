@@ -1,0 +1,13 @@
+.table {
+	border-collapse: collapse;
+	border: none;
+	width: 1000px;
+}
+
+.table th, .table td {
+	padding: 5px 10px;
+}
+
+.thead {
+	border-bottom: 1px solid #ffffff;
+}

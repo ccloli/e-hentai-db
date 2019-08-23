@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import moment from 'moment';
 import { withRouter } from 'react-router-dom';
 import fileSize from '../../util/fileSize';
@@ -6,11 +6,16 @@ import styles from './Gallery.css';
 import { categoryNameMap } from '../../util/category';
 import Rating from '../Rating';
 import parseEntity from '../../util/parseEntity';
+import Modal from '../Modal/Modal';
+import Torrent from '../Torrent';
 
 const Gallery = ({
 	thumb, category, uploader, posted, expunged, removed, replaced, filesize, filecount,
-	title, title_jpn, rating, tags = [], gid, token, onSearch = () => {}
+	title, title_jpn, rating, tags = [], gid, token, torrents, onSearch = () => {}
 }) => {
+	const [visible, setVisible] = useState(false);
+	const toggleTorrentModal = () => setVisible(!visible);
+
 	const tagList = {};
 	tags.forEach(e => {
 		const [type, name] = ['misc'].concat(e.split(':', 2)).slice(-2);
@@ -84,6 +89,17 @@ const Gallery = ({
 					</span>
 				</div>
 				<div className={styles.metaItem}>
+					<span className={styles.metaLabel}>Torrents:</span>
+					<span className={styles.metaValue}>
+						<a
+							className={styles.torrentLink}
+							onClick={torrents.length ? toggleTorrentModal : null}
+							disabled={!torrents.length}>
+							{torrents.length}
+						</a>
+					</span>
+				</div>
+				<div className={styles.metaItem}>
 					<span className={styles.metaLabel}>Rating:</span>
 					<span className={styles.metaValue}>
 						<Rating value={rating} />
@@ -119,6 +135,9 @@ const Gallery = ({
 					))}
 				</div>
 			</div>
+			<Modal visible={visible} onClose={toggleTorrentModal}>
+				<Torrent torrents={torrents} />
+			</Modal>
 		</div>
 	);
 };
