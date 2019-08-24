@@ -24,7 +24,7 @@ const tagList = async (req, res) => {
 
 	const result = await conn.query(
 		`SELECT a.* FROM gallery AS a INNER JOIN (
-			SELECT a.* FROM gid_tid AS a STRAIGHT_JOIN (
+			SELECT a.* FROM gid_tid AS a INNER JOIN (
 				SELECT id FROM tag WHERE name IN (?)
 			) AS b ON a.tid = b.id GROUP BY a.gid HAVING COUNT(a.gid) = ? ORDER BY NULL
 		) AS b ON a.gid = b.gid WHERE expunged = 0 ORDER BY posted DESC LIMIT ? OFFSET ?`,
@@ -32,7 +32,7 @@ const tagList = async (req, res) => {
 	);
 	const { total } = (await conn.query(
 		`SELECT COUNT(*) AS total FROM gallery AS a INNER JOIN (
-			SELECT a.* FROM gid_tid AS a STRAIGHT_JOIN(
+			SELECT a.* FROM gid_tid AS a INNER JOIN(
 				SELECT id FROM tag WHERE name IN(?)
 			) AS b ON a.tid = b.id GROUP BY a.gid HAVING COUNT(a.gid) = ? ORDER BY NULL
 		) AS b ON a.gid = b.gid WHERE expunged = 0`,

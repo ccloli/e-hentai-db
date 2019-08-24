@@ -80,7 +80,7 @@ const search = async (req, res) => {
 		if (tags.inc.length) {
 			table = conn.connection.format(
 				`(
-					SELECT a.* FROM gid_tid AS a STRAIGHT_JOIN (
+					SELECT a.* FROM gid_tid AS a INNER JOIN (
 						SELECT id FROM tag WHERE name IN (?)
 					) AS b ON a.tid = b.id GROUP BY a.gid HAVING COUNT(a.gid) = ? ORDER BY NULL
 				)`,
@@ -91,7 +91,7 @@ const search = async (req, res) => {
 		if (tags.exc.length) {
 			excTable = conn.connection.format(
 				`(
-					SELECT a.* FROM gid_tid AS a STRAIGHT_JOIN (
+					SELECT a.* FROM gid_tid AS a INNER JOIN (
 						SELECT id FROM tag WHERE name IN (?)
 					) AS b ON a.tid = b.id
 				)`,
