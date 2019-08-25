@@ -31,7 +31,7 @@ const tagList = async (req, res) => {
 		[tags, tags.length, limit, (page - 1) * limit]
 	);
 	const { total } = (await conn.query(
-		`SELECT COUNT(*) AS total FROM gallery AS a FORCE INDEX(posted) INNER JOIN (
+		`SELECT COUNT(*) AS total FROM gallery AS a INNER JOIN (
 			SELECT a.* FROM gid_tid AS a INNER JOIN(
 				SELECT id FROM tag WHERE name IN(?)
 			) AS b ON a.tid = b.id GROUP BY a.gid HAVING COUNT(a.gid) = ? ORDER BY NULL

@@ -150,7 +150,8 @@ const search = async (req, res) => {
 		[limit, (page - 1) * limit]
 	);
 
-	const { total } = (await conn.query(`SELECT COUNT(*) AS total FROM ${table} WHERE ${query || 1}`))[0];
+	const noForceIndexTable = table.replace('FORCE INDEX(posted)', '');
+	const { total } = (await conn.query(`SELECT COUNT(*) AS total FROM ${noForceIndexTable} WHERE ${query || 1}`))[0];
 
 	if (!result.length) {
 		conn.destroy();
