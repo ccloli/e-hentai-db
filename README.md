@@ -55,57 +55,62 @@ The response type of all APIs are JSON, and follow the format below.
 `data` should normally be a metadata, or a list of metadata, or `null` if any error happens. The format of metadata is based on E-Hentai's offical gallery JSON API, you can check it on [EHWiki](https://ehwiki.org/wiki/API). But data type may be a little different from offical API, like using `int` for `posted` and `filecount` instead of `string`.
 
 ```json
-    {
-        "gid": 1462447,
-        "token": "e25b826d82",
-        "archiver_key": "434919--5d5ec9b30b60eebe4c7ba5d4a893984e69a0be8d",
-        "title": "[Uousaohkoku (Uousaoh)] Ciao Ciao Buon Appetito (Kantai Collection -KanColle-) [Chinese] [Lolipoi汉化组] [Digital]",
-        "title_jpn": "[魚ウサ王国 (魚ウサ王)] ちゃおちゃおぼなぺてぃーと (艦隊これくしょん -艦これ-) [中国翻訳] [DL版]",
-        "category": "Doujinshi",
-        "thumb": "https://ehgt.org/b7/55/b755981e1070efe3c9d5d76cffe1c02743beced9-802339-1297-1831-jpg_l.jpg",
-        "uploader": "kaiwen1108",
-        "posted": 1565535124,
-        "filecount": 24,
-        "filesize": 24322346,
-        "expunged": 0,
-        "removed": 0,
-        "replaced": 0,
-        "rating": "4.88",
-        "torrentcount": 1, // useless, count it by `torrents` instead
-        "root_gid": 1462447,
-        "tags": [
-            "female:lolicon",
-            "female:twintails",
-            "language:translated",
-            "group",
-            "male:sole male",
-            "mosaic censorship",
-            "ffm threesome",
-            "female:dark skin",
-            "female:femdom",
-            "male:bondage",
-            "female:tanlines",
-            "female:shimapan",
-            "language:chinese",
-            "female:ponytail",
-            "group:uousaohkoku",
-            "artist:uousaoh",
-            "parody:kantai collection",
-            "character:teitoku",
-            "character:libeccio",
-            "character:maestrale"
-        ],
-        "torrents": [
-            {
-                "id": 685644,
-                "name": "[魚ウサ王国 (魚ウサ王)] ちゃおちゃおぼなぺてぃーと (艦隊これくしょん -艦これ-) [中国翻訳] [DL版].zip",
-                "hash": "2d68b8182e8d48b0b44af520152ee86460de6476",
-                "addedstr": "2019-08-11 14:57",
-                "fsizestr": "21.69 MB",
-                "uploader": "Superlatanium"
-            }
-        ]
-    }
+{
+    "gid": 592178,
+    "token": "41cc263dc7",
+    "archiver_key": "434486--1617c38d90630b5e399e730d62dea241363cdce6",
+    "title": "(Shota Scratch 5) [Studio Zealot (Various)] Bokutachi! Shotappuru!! (Boku no Pico)",
+    "title_jpn": "(ショタスクラッチ5) [Studio Zealot (よろず)] ぼくたち!しょたっぷる!! (ぼくのぴこ)",
+    "category": "Doujinshi",
+    "thumb": "https://ehgt.org/4c/6a/4c6ad39fffcdefcb2cd35218a95395af2e5ad74d-1854978-2118-3000-jpg_l.jpg",
+    "uploader": "tooecchi",
+    "posted": 1368418878,
+    "filecount": 63,
+    "filesize": 75630519,
+    "expunged": 0,
+    "removed": 0,
+    "replaced": 0,
+    "rating": "4.54",
+    "torrentcount": 1, // useless, count it by `torrents` instead
+    "root_gid": 592178,
+    "tags": [
+        "male:crossdressing",
+        "male:shotacon",
+        "male:tomgirl",
+        "male:yaoi",
+        "artist:tower",
+        "artist:mokkouyou bond",
+        "male:anal",
+        "male:schoolgirl uniform",
+        "male:catboy",
+        "artist:murasaki nyaa",
+        "artist:po-ju",
+        "artist:rustle",
+        "artist:miyakawa hajime",
+        "artist:fujinomiya yuu",
+        "artist:tanuma yuuichirou",
+        "male:school swimsuit",
+        "artist:mikami hokuto",
+        "artist:azuma kyouto",
+        "male:josou seme",
+        "parody:boku no pico",
+        "male:frottage",
+        "male:bloomers",
+        "artist:nemunemu",
+        "group:studio zealot",
+        "artist:aoi madoka"
+    ],
+    "torrents": [
+        {
+            "id": 632947,
+            "name": "(Shota Scratch 5) [Studio Zealot (Various)] Bokutachi! Shotappuru!! (Boku no Pico)",
+            "hash": "2a4641feba9943b0e028927879ff6567e74bf0ae",
+            "addedstr": "2019-02-28 00:39",
+            "fsizestr": "72.13 MB",
+            "uploader": "Hyenacub"
+        }
+    ]
+}
 ```
 
 ### `/api/gallery/:gid/:token`
