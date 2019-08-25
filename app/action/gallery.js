@@ -1,5 +1,7 @@
 const ConnectDB = require('../util/connectDB');
 const getResponse = require('../util/getResponse');
+const queryTags = require('../util/queryTags');
+const queryTorrents = require('../util/queryTorrents');
 
 const gallery = async (req, res) => {
 	const { gid = '', token = '' } = Object.assign({}, req.params, req.query);
@@ -19,7 +21,7 @@ const gallery = async (req, res) => {
 	const tags = (await queryTags(conn, [gid]))[gid] || [];
 	let torrents = [];
 	if (result.root_gid) {
-		const torrents = (await queryTorrents(conn, [root_gid]))[root_gid] || [];
+		torrents = (await queryTorrents(conn, [root_gid]))[root_gid] || [];
 	}
 
 	conn.destroy();
