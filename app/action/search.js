@@ -115,7 +115,7 @@ const search = async (req, res) => {
 					SELECT a.* FROM ${table} AS a LEFT JOIN ${excTable} AS b ON a.gid = b.gid WHERE b.gid IS NULL
 				)`;
 			}
-			table = `gallery INNER JOIN ${table} AS t ON gallery.gid = t.gid`;
+			table = `gallery FORCE INDEX(posted) INNER JOIN ${table} AS t ON gallery.gid = t.gid`;
 		}
 	}
 	else {
