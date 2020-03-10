@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './Torrent.css';
+import moment from 'moment';
 
 const Torrent = ({ torrents }) => (
 	<table className={styles.table}>
@@ -28,7 +29,7 @@ const Torrent = ({ torrents }) => (
 					</td>
 					<td>{e.fsizestr}</td>
 					<td>{e.uploader}</td>
-					<td>{e.addedstr}</td>
+					<td>{e.addedstr && moment(`${e.addedstr}+00:00`).format('YYYY-MM-DD HH:mm')}</td>
 				</tr>
 			))}
 		</tbody>
