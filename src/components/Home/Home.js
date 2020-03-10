@@ -10,6 +10,7 @@ const Home = ({ history }) => {
 	const [loading, setLoading] = useState(false);
 	const [total, setTotal] = useState(null);
 	const aborter = useRef();
+	const totalStatus = useRef();
 
 	const query = queryString.parse(history.location.search.substr(1));
 	const { page = 1, limit = 10 } = query;
@@ -31,6 +32,12 @@ const Home = ({ history }) => {
 			setList(data);
 			setTotal(total);
 			setLoading(false);
+			if (totalStatus.current) {
+				totalStatus.current.scrollIntoView({
+					behavior: 'smooth',
+					block: 'nearest',
+				});
+			}
 		});
 	};
 
@@ -60,7 +67,7 @@ const Home = ({ history }) => {
 	return (
 		<div className={styles.container}>
 			<SearchBox options={query} search={history.location.search} onSearch={onSearch} />
-			<p className={styles.total}>
+			<p className={styles.total} ref={totalStatus}>
 				{loading ? 'Loading...' : `Matches ${total} ${total > 1 ? 'results' : 'result'}.`}
 			</p>
 			{list.length ? (
