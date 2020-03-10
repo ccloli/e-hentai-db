@@ -69,7 +69,7 @@ const Gallery = ({
 							expunged ? 'No (Expunged)'
 								: removed ? 'No (Removed)'
 									: replaced ? 'No (Replaced)'
-										: category.toLowerCase() === 'private' ? 'No (Privated)'
+										: category.toLowerCase() === 'private' ? 'No (Private)'
 											: 'Yes'
 						}
 					</span>

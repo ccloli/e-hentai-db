@@ -39,6 +39,11 @@ const category = [
 		name: 'Misc',
 		value: 1 << 0,
 		color: '#777777',
+	}, {
+		name: 'private',
+		value: 1 << 10,
+		color: '#000000',
+		visible: false
 	}
 ];
 

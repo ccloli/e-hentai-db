@@ -104,7 +104,7 @@ const SearchBox = ({ options, onSearch }) => {
 	return (
 		<form className={styles.container} onSubmit={onSubmit}>
 			<div className={styles.category}>
-				{categoryList.map(e => (
+				{categoryList.filter(e => e.visible !== false).map(e => (
 					<label key={e.value} className={styles.item}>
 						<input type="checkbox" checked={category & e.value} value={e.value} onChange={updateCategory} className={styles.checkbox} />
 						<span className={styles.name} style={{ background: e.color }}>{e.name}</span>
