@@ -294,10 +294,10 @@ class TorrentSync {
 					}
 				});
 
+				page++;
 				if (this.pages === page) {
 					break;
 				}
-				page++;
 			}
 
 			if (!list.length) {
