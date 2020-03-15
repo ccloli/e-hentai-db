@@ -19,6 +19,12 @@ class Sync {
 		this.query = this.query.bind(this);
 		this.run = this.run.bind(this);
 		this.host = process.argv[2] || 'e-hentai.org';
+		let offset = process.argv[3] || 0;
+		if (/^-?\d+$/.test(this.host)) {
+			offset = this.host;
+			this.host = 'e-hentai.org';
+		}
+		this.offset = Number.isNaN(+offset) ? 0 : +offset;
 		this.cookies = this.loadCookies();
 	}
 
@@ -159,9 +165,13 @@ class Sync {
 			}
 
 			await this.query('SET NAMES UTF8MB4');
-			const lastPosted = await this.getLastPosted();
+			let lastPosted = await this.getLastPosted();
 			connection.destroy();
 			console.log(`got last posted = ${lastPosted}`);
+			if (this.offset) {
+				lastPosted += this.offset;
+				console.log(`offset last posted = ${lastPosted}`);
+			}
 
 			const list = [];
 			let page = 0;
