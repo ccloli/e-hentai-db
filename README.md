@@ -26,11 +26,12 @@ Just another E-Hentai metadata database
 5. Edit `config.js`, set database username, password, database name, etc.
 
 6. Run `npm run import [file=gdata.json]` to import the JSON file into your database
-    - If you want to update to latest galleries, run `npm run sync [host=e-hentai.org]`
+    - If you want to update to latest galleries, run `npm run sync [host=e-hentai.org] [timestampOffset=0]`
     - If you want to resync gallery metadatas since a few hours ago, run `npm run resync [hour=24]`
     - If you want to mark all replaced galleries, run `npm run mark-replaced` (new galleries will mark them automatically)
     - If you want to get torrents from all galleries, run `npm run torrent-import [host=e-hentai.org]` (USE AT YOUR OWN RISK)
     - If you want to update torrents from torrent list, run `npm run torrent-sync [host=e-hentai.org]`
+    - If you want to manually fetch some galleries, run `npm run fetch {gid}/{token} {gid}/{token} ...` or `npm run fetch [filename]`
 
 7. Wait a few minutes, as it has about 800,000 records (on my PC it takes 260s, and on my server it's 850s)
 
