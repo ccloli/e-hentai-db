@@ -284,8 +284,10 @@ class TorrentSync {
 				const curList = await this.getPages(page);
 				console.log(`got gtid ${curList[0][2]} to ${curList.slice(-1)[0][2]}`);
 				curList.forEach(e => {
-					if ((this.pages || e[2] > lastTorrentId) && !existTorrentIdMap[e[2]]) {
-						list.push(e);
+					if ((this.pages || e[2] > lastTorrentId)) {
+						if (!existTorrentIdMap[e[2]]) {
+							list.push(e);
+						}
 					}
 					else {
 						finish = true;
