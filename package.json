@@ -12,6 +12,7 @@
     "torrent-import": "node ./scripts/torrent.js",
     "torrent-sync": "node ./scripts/torrentsync.js",
     "mark-replaced": "node ./scripts/markreplaced.js",
+    "fetch": "node ./scripts/fetch.js",
     "lint": "eslint src/**/*.js app/**/*.js",
     "build": "webpack -p --env.prod --progress",
     "dev": "webpack-dev-server --inline --progress -d --watch --hot",
