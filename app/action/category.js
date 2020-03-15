@@ -19,7 +19,7 @@ const list = async (req, res) => {
 	let cat = [];
 	if (!Number.isNaN(+category)) {
 		if (category < 0) {
-			category = -category ^ 1023;
+			category = -category ^ 2047;
 		}
 		Object.entries(categoryMap).forEach(([key, value]) => {
 			if (+key & +category) {
