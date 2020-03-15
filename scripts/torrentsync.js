@@ -26,6 +26,12 @@ class TorrentSync {
 		this.sleep = this.sleep.bind(this);
 		this.run = this.run.bind(this);
 		this.host = process.argv[2] || 'e-hentai.org';
+		let pages = process.argv[3] || 0;
+		if (/^\d+$/.test(this.host)) {
+			pages = this.hosts;
+			this.host = 'e-hentai.org';
+		}
+		this.pages = +pages;
 		this.cookies = this.loadCookies();
 	}
 
@@ -268,13 +274,17 @@ class TorrentSync {
 				const curList = await this.getPages(page);
 				console.log(`got gtid ${curList[0][2]} to ${curList.slice(-1)[0][2]}`);
 				curList.forEach(e => {
-					if (e[2] > lastTorrentId) {
+					if (this.pages || e[2] > lastTorrentId) {
 						list.push(e);
 					}
 					else {
 						finish = true;
 					}
 				});
+
+				if (this.pages === page) {
+					break;
+				}
 				page++;
 			}
 
