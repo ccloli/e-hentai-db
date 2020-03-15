@@ -82,6 +82,12 @@ class TorrentSync {
 		)[0] || {}).id || 0;
 	}
 
+	async getExistTorrentIds() {
+		return (
+			await this.query('SELECT id FROM torrent')
+		).map(e => e.id);
+	}
+
 	getPages(page = 0) {
 		return new Promise((resolve, reject) => {
 			try {
@@ -267,6 +273,10 @@ class TorrentSync {
 			const list = [];
 			let page = 0;
 			let finish = false;
+			const existTorrentIdMap = (await this.getExistTorrentIds()).reduce((pre, e) => {
+				pre[e] = 1;
+				return pre;
+			}, {});
 
 			while (!finish) {
 				await this.sleep(1);
@@ -274,7 +284,7 @@ class TorrentSync {
 				const curList = await this.getPages(page);
 				console.log(`got gtid ${curList[0][2]} to ${curList.slice(-1)[0][2]}`);
 				curList.forEach(e => {
-					if (this.pages || e[2] > lastTorrentId) {
+					if ((this.pages || e[2] > lastTorrentId) && !existTorrentIdMap[e[2]]) {
 						list.push(e);
 					}
 					else {
