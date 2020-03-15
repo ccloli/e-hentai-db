@@ -170,7 +170,7 @@ class Sync {
 			connection.destroy();
 			console.log(`got last posted = ${lastPosted}`);
 			if (this.offset) {
-				lastPosted += this.offset;
+				lastPosted += this.offset * 3600;
 				console.log(`offset last posted = ${lastPosted}`);
 			}
 
