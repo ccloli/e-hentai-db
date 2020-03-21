@@ -98,7 +98,7 @@ class TorrentSync {
 					method: 'GET',
 					hostname: this.host,
 					path: `/torrents.php?${[
-						status ? `status=${status}` : '',
+						status ? `s=${status}` : '',
 						page ? `page=${page}` : '',
 					].filter(e => e).join('&')}`.replace(/\?$/, ''),
 					headers: {
