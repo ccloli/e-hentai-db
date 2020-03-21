@@ -27,11 +27,14 @@ class TorrentSync {
 		this.run = this.run.bind(this);
 		this.host = process.argv[2] || 'e-hentai.org';
 		let pages = process.argv[3] || 0;
+		let status = process.argv[4] || '';
 		if (/^\d+$/.test(this.host)) {
+			status = pages;
 			pages = this.hosts;
 			this.host = 'e-hentai.org';
 		}
 		this.pages = +pages;
+		this.status = status;
 		this.cookies = this.loadCookies();
 	}
 
@@ -88,13 +91,16 @@ class TorrentSync {
 		).map(e => e.id);
 	}
 
-	getPages(page = 0) {
+	getPages(page = 0, status) {
 		return new Promise((resolve, reject) => {
 			try {
 				const request = https.request({
 					method: 'GET',
 					hostname: this.host,
-					path: `/torrents.php${ page ? `?page=${page}` : ''}`,
+					path: `/torrents.php?${[
+						status ? `status=${status}` : '',
+						page ? `page=${page}` : '',
+					].filter(e => e).join('&')}`.replace(/\?$/, ''),
 					headers: {
 						'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*',
 						'Accept-Language': 'en-US;q=0.9,en;q=0.8',
@@ -281,7 +287,7 @@ class TorrentSync {
 			while (!finish) {
 				await this.sleep(1);
 				console.log(`requesting page ${page}...`);
-				const curList = await this.getPages(page);
+				const curList = await this.getPages(page, this.status);
 				console.log(`got gtid ${curList[0][2]} to ${curList.slice(-1)[0][2]}`);
 				curList.forEach(e => {
 					if ((this.pages || e[2] > lastTorrentId)) {
