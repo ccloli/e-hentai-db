@@ -360,14 +360,14 @@ class TorrentSync {
 				const curid = gids.shift();
 				const [gid, token] = list.find(e => +e[0] === +curid);
 				const res = await this.getTorrents(gid, token);
-				const { gid: rootGid, list: result, pending } = res;
+				const { gid: rootGid, list: result, pending, removed } = res;
 				if (pending) {
 					console.log(`*** gid ${gid} is pending for cache refresh`);
+				} else if (removed) {
+					console.log(`*** gid ${gid} seems to be removed?`);
+				} else if (!rootGid) {
+					gids.push(gid);
 				} else {
-					if (!rootGid) {
-						gids.push(gid);
-						continue;
-					}
 					const hashes = await this.getExistTorrents(rootGid);
 					const newTorrents = result.filter(e => hashes.indexOf(e.hash) < 0);
 					if (newTorrents.length) {
