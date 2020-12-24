@@ -21,3 +21,10 @@ app.use('/', router);
 app.listen(port, () => {
 	console.log(`Server is now listening on port ${port}`);
 });
+
+app.on('error', (err) => {
+	console.error(err);
+});
+process.on('uncaughtException', (err) => {
+	console.error(err);
+});
