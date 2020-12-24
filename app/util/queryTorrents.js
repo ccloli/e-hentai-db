@@ -1,5 +1,8 @@
 const queryTorrents = async (conn, gids) => {
 	const gidTorrents = {};
+	if (!gids || !gids.length) {
+		return gidTorrents;
+	}
 	const torrentResult = await conn.query(
 		'SELECT * FROM torrent WHERE gid IN (?)', [gids]
 	);
