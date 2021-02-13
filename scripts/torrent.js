@@ -191,13 +191,13 @@ class TorrentImport {
 							if (connect) {
 								this.releaseProxy(connect);
 							}
-							const torrentRegex = /name="gtid"\svalue="(\d+?)"[\s\S]*?Posted:<.*?(\d{4}-\d{2}-\d{2} \d{2}:\d{2})<\/[\s\S]*?Size:.*>\s?([\d.KMGTB ]+)<\/[\s\S]*?Uploader:.*?([\S]+)<\/[\s\S]*?([0-9a-f]{40})\.torrent.*?>(.*?)<\/a><\/td>/g;
+							const torrentRegex = /name="gtid"\svalue="(\d+?)"[\s\S]*?Posted:<.*?(\d{4}-\d{2}-\d{2} \d{2}:\d{2})<\/[\s\S]*?Size:.*>\s?([\d.KMGTB ]+)<\/[\s\S]*?Uploader:.*?([\S]+)<\/[\s\S]*?(?:([0-9a-f]{40})\.torrent|(value="Expunged")).*?>(.*?)(?:<\/a>)?<\/td>/g;
 							let exec;
 							let list = [];
 							// eslint-disable-next-line no-cond-assign
 							while (exec = torrentRegex.exec(response)) {
-								const [, gtid, posted, size, uploader, hash, name] = exec;
-								list.push({ gtid, posted, size, uploader, hash, name });
+								const [, gtid, posted, size, uploader, hash, expunged, name] = exec;
+								list.push({ gtid, posted, size, uploader, hash, expunged: !!expunged, name });
 							}
 							const gid = (response.match(/\/(\d+)\/announce/) || [])[1];
 							let removed = false;
@@ -303,7 +303,8 @@ class TorrentImport {
 									fsizestr: e.size,
 									uploader: e.uploader,
 									hash: e.hash,
-									name: e.name
+									name: e.name,
+									expunged: !!e.expunged,
 								}])
 							));
 							// set exist root_gid galleries to replaced, this improves search performance
