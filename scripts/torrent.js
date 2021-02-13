@@ -296,7 +296,7 @@ class TorrentImport {
 							const hashes = await this.getExistTorrents(gid);
 							const newTorrents = list.filter(e => hashes.indexOf(e.hash) < 0);
 							await Promise.all(newTorrents.map(
-								e => this.query('INSERT INTO torrent SET ?', [{
+								e => this.query('INSERT INTO torrent SET ? ON DUPLICATE KEY UPDATE ?', [{
 									id: e.gtid,
 									gid,
 									addedstr: e.posted,
@@ -304,6 +304,8 @@ class TorrentImport {
 									uploader: e.uploader,
 									hash: e.hash,
 									name: e.name,
+									expunged: !!e.expunged,
+								}, {
 									expunged: !!e.expunged,
 								}])
 							));
