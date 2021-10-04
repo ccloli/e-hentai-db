@@ -9,4 +9,6 @@ module.exports = {
 	corsOrigin: '*',
 	webui: false,
 	webuiPath: 'dist',
+	uriCallInterval: 10,
+	startPage: 0, //784, // 783
 };
