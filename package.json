@@ -9,6 +9,7 @@
     "import": "node ./scripts/import.js",
     "sync": "node ./scripts/sync.js",
     "resync": "node ./scripts/resync.js",
+    "fullsync": "node ./scripts/fullsync.js",
     "torrent-import": "node ./scripts/torrent.js",
     "torrent-sync": "node ./scripts/torrentsync.js",
     "mark-replaced": "node ./scripts/markreplaced.js",
@@ -21,8 +22,10 @@
   "author": "ccloli",
   "license": "GPL-3.0",
   "dependencies": {
+    "cookiefile": "^1.0.10",
     "express": "^4.17.1",
-    "mysql": "^2.17.1"
+    "mysql": "^2.17.1",
+    "socks-proxy-agent": "^5.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",

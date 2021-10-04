@@ -4,5 +4,6 @@ gdata.json
 *.swp
 *.tmp
 dist/
-.cookies
+.cookies*
 .proxies
+gdata-*.json
