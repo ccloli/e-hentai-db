@@ -28,11 +28,14 @@ class TorrentSync {
 		this.host = process.argv[2] || 'e-hentai.org';
 		let pages = process.argv[3] || 0;
 		let status = process.argv[4] || '';
+		let search = process.argv[5] || '';
 		if (/^\d+$/.test(this.host)) {
+			search = status;
 			status = pages;
 			pages = this.hosts;
 			this.host = 'e-hentai.org';
 		}
+		this.search = search;
 		this.pages = +pages;
 		this.status = status;
 		this.cookies = this.loadCookies();
@@ -103,13 +106,14 @@ class TorrentSync {
 		).map(e => e.id);
 	}
 
-	getPages(page = 0, status) {
+	getPages(page = 0, status, search) {
 		return new Promise((resolve, reject) => {
 			try {
 				const request = https.request({
 					method: 'GET',
 					hostname: this.host,
 					path: `/torrents.php?${[
+						search ? `search=${search}` : '',
 						status ? `s=${status}` : '',
 						page ? `page=${page}` : '',
 					].filter(e => e).join('&')}`.replace(/\?$/, ''),
@@ -185,7 +189,6 @@ class TorrentSync {
 							const gid = (response.match(/\/(\d+)\/announce/) || [])[1];
 							let removed = false;
 							let pending = false;
-							// console.log(gid, list);
 							if (!gid) {
 								if (response.indexOf('Your IP address has been temporarily banned') >= 0) {
 									console.log(response);
@@ -299,7 +302,7 @@ class TorrentSync {
 			while (!finish) {
 				await this.sleep(1);
 				console.log(`requesting page ${page}...`);
-				const curList = await this.retryResolver(() => this.getPages(page, this.status), 3);
+				const curList = await this.retryResolver(() => this.getPages(page, this.status, this.search), 3);
 				console.log(`got gtid ${curList[0][2]} to ${curList.slice(-1)[0][2]}`);
 				curList.forEach(e => {
 					if ((this.pages || e[2] > lastTorrentId)) {
