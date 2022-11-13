@@ -17,6 +17,18 @@ class Fetch {
 				encoding: 'utf8'
 			}).split(/\r?\n/).map(e => e.trim()).filter(e => e).map(e => e.split(/\/g\//).pop().split(/[/,_\s]/));
 		}
+		this.retryTimes = 3;
+	}
+
+	async retryResolver(fn, time = 1, ...args) {
+		for (let i = 0; i < time; i++) {
+			try {
+				return await fn(...args);
+			} catch (err) {
+				console.log(err.stack || err);
+			}
+		}
+		throw new Error('Exceed maximum retry time');
 	}
 
 	getMetadatas(gidlist) {
@@ -83,7 +95,7 @@ class Fetch {
 			await this.sleep(1);
 			const curList = list.splice(0, 25).map(e => [e.gid, e.token]);
 			console.log(`requesting metadata of ${curList[0][0]} to ${curList.slice(-1)[0][0]} (${curList.length})...`);
-			const metadatas = await this.getMetadatas(curList);
+			const metadatas = await this.retryResolver(() => this.getMetadatas(curList), 3);
 			metadatas.forEach(e => result[e.gid] = e);
 		}
 

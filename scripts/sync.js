@@ -27,6 +27,7 @@ class Sync {
 		console.log(process.argv);
 		this.offset = Number.isNaN(-offset) ? 0 : -offset;
 		this.cookies = this.loadCookies();
+		this.retryTimes = 3;
 	}
 
 	query(...args) {
@@ -51,6 +52,17 @@ class Sync {
 		} catch(err) {
 			return '';
 		}
+	}
+
+	async retryResolver(fn, time = 1, ...args) {
+		for (let i = 0; i < time; i++) {
+			try {
+				return await fn(...args);
+			} catch (err) {
+				console.log(err.stack || err);
+			}
+		}
+		throw new Error('Exceed maximum retry time');
 	}
 
 	async getLastPosted() {
@@ -184,7 +196,7 @@ class Sync {
 				while (!finish) {
 					await this.sleep(1);
 					console.log(`requesting ${expunged ? 'expunged' : 'default'} page ${page}...`);
-					const curList = await this.getPages(next, expunged);
+					const curList = await this.retryResolver(() => this.getPages(next, expunged), this.retryTimes);
 					console.log(`got ${curList[0][0]} to ${curList.slice(-1)[0][0]}`);
 					curList.forEach(e => {
 						if (new Date(`${e[2].split(' ').join('T')}Z`).getTime() > lastPosted * 1000) {
@@ -213,7 +225,7 @@ class Sync {
 				await this.sleep(1);
 				const curList = list.splice(0, 25);
 				console.log(`requesting metadata of ${curList[0][0]} to ${curList.slice(-1)[0][0]} (${curList.length})...`);
-				const metadatas = await this.getMetadatas(curList);
+				const metadatas = await this.retryResolver(() => this.getMetadatas(curList), 3);
 				metadatas.forEach(e => result[e.gid] = e);
 			}
 

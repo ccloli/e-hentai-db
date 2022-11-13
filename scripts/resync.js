@@ -19,6 +19,7 @@ class Resync {
 		this.query = this.query.bind(this);
 		this.run = this.run.bind(this);
 		this.duration = process.argv[2] || '24';
+		this.retryTimes = 3;
 	}
 
 	query(...args) {
@@ -35,6 +36,17 @@ class Resync {
 				reject(err);
 			}
 		});
+	}
+
+	async retryResolver(fn, time = 1, ...args) {
+		for (let i = 0; i < time; i++) {
+			try {
+				return await fn(...args);
+			} catch (err) {
+				console.log(err.stack || err);
+			}
+		}
+		throw new Error('Exceed maximum retry time');
 	}
 
 	getResyncList() {
@@ -115,7 +127,7 @@ class Resync {
 				await this.sleep(1);
 				const curList = list.splice(0, 25).map(e => [e.gid, e.token]);
 				console.log(`requesting metadata of ${curList[0][0]} to ${curList.slice(-1)[0][0]} (${curList.length})...`);
-				const metadatas = await this.getMetadatas(curList);
+				const metadatas = await this.retryResolver(() => this.getMetadatas(curList), 3);
 				metadatas.forEach(e => result[e.gid] = e);
 			}
 
