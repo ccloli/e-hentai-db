@@ -302,7 +302,7 @@ class TorrentSync {
 			while (!finish) {
 				await this.sleep(1);
 				console.log(`requesting page ${page}...`);
-				const curList = await this.retryResolver(() => this.getPages(page, this.status, this.search), 3);
+				const curList = await this.retryResolver(() => this.getPages(page, this.status, this.search), this.retryTimes);
 				console.log(`got gtid ${curList[0][2]} to ${curList.slice(-1)[0][2]}`);
 				curList.forEach(e => {
 					if ((this.pages || e[2] > lastTorrentId)) {
@@ -344,7 +344,7 @@ class TorrentSync {
 					console.log(`requesting metadata of ${curList[0]} to ${curList.slice(-1)[0]} (${curList.length})...`);
 					const metadatas = await this.retryResolver(() => this.getMetadatas(
 						curList.map(e => list.find(item => +item[0] === +e).slice(0, 2))
-					), 3);
+					), this.retryTimes);
 					metadatas.forEach(e => result[e.gid] = e);
 				}
 
@@ -374,7 +374,7 @@ class TorrentSync {
 				await this.sleep(1);
 				const curid = gids.shift();
 				const [gid, token] = list.find(e => +e[0] === +curid);
-				const res = await this.retryResolver(() => this.getTorrents(gid, token), 3);
+				const res = await this.retryResolver(() => this.getTorrents(gid, token), this.retryTimes);
 				const { gid: rootGid, list: result, pending, removed } = res;
 				if (pending) {
 					console.log(`*** gid ${gid} is pending for cache refresh`);

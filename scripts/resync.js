@@ -127,7 +127,7 @@ class Resync {
 				await this.sleep(1);
 				const curList = list.splice(0, 25).map(e => [e.gid, e.token]);
 				console.log(`requesting metadata of ${curList[0][0]} to ${curList.slice(-1)[0][0]} (${curList.length})...`);
-				const metadatas = await this.retryResolver(() => this.getMetadatas(curList), 3);
+				const metadatas = await this.retryResolver(() => this.getMetadatas(curList), this.retryTimes);
 				metadatas.forEach(e => result[e.gid] = e);
 			}
 
