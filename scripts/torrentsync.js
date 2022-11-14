@@ -6,15 +6,6 @@ const config = require('../config');
 
 class TorrentSync {
 	constructor() {
-		this.connection = mysql.createConnection({
-			host: config.dbHost,
-			port: config.dbPort,
-			user: config.dbUser,
-			password: config.dbPass,
-			database: config.dbName,
-			timeout: 10e3,
-		});
-
 		this.initConnection = this.initConnection.bind(this);
 		this.query = this.query.bind(this);
 		this.loadCookies = this.loadCookies.bind(this);
@@ -40,6 +31,7 @@ class TorrentSync {
 		this.status = status;
 		this.cookies = this.loadCookies();
 		this.retryTimes = 3;
+		this.connection = this.initConnection();
 	}
 
 	initConnection() {

@@ -7,15 +7,6 @@ const config = require('../config');
 
 class Sync {
 	constructor() {
-		this.connection = mysql.createConnection({
-			host: config.dbHost,
-			port: config.dbPort,
-			user: config.dbUser,
-			password: config.dbPass,
-			database: config.dbName,
-			timeout: 10e3,
-		});
-
 		this.query = this.query.bind(this);
 		this.run = this.run.bind(this);
 		this.host = process.argv[2] || 'e-hentai.org';
@@ -24,10 +15,27 @@ class Sync {
 			offset = this.host;
 			this.host = 'e-hentai.org';
 		}
-		console.log(process.argv);
 		this.offset = Number.isNaN(-offset) ? 0 : -offset;
 		this.cookies = this.loadCookies();
 		this.retryTimes = 3;
+		this.connection = this.initConnection();
+	}
+
+	initConnection() {
+		const connection = mysql.createConnection({
+			host: config.dbHost,
+			port: config.dbPort,
+			user: config.dbUser,
+			password: config.dbPass,
+			database: config.dbName,
+			timeout: 10e3,
+		});
+		connection.on('error', (err) => {
+			console.error(err);
+			this.connection = this.initConnection();
+			this.connection.connect();
+		});
+		return connection;
 	}
 
 	query(...args) {

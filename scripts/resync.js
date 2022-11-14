@@ -7,7 +7,15 @@ const config = require('../config');
 
 class Resync {
 	constructor() {
-		this.connection = mysql.createConnection({
+		this.query = this.query.bind(this);
+		this.run = this.run.bind(this);
+		this.duration = process.argv[2] || '24';
+		this.retryTimes = 3;
+		this.connection = this.initConnection();
+	}
+
+	initConnection() {
+		const connection = mysql.createConnection({
 			host: config.dbHost,
 			port: config.dbPort,
 			user: config.dbUser,
@@ -15,11 +23,12 @@ class Resync {
 			database: config.dbName,
 			timeout: 10e3,
 		});
-
-		this.query = this.query.bind(this);
-		this.run = this.run.bind(this);
-		this.duration = process.argv[2] || '24';
-		this.retryTimes = 3;
+		connection.on('error', (err) => {
+			console.error(err);
+			this.connection = this.initConnection();
+			this.connection.connect();
+		});
+		return connection;
 	}
 
 	query(...args) {

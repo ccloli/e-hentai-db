@@ -6,15 +6,6 @@ const config = require('../config');
 
 class TorrentImport {
 	constructor() {
-		this.connection = mysql.createConnection({
-			host: config.dbHost,
-			port: config.dbPort,
-			user: config.dbUser,
-			password: config.dbPass,
-			database: config.dbName,
-			timeout: 10e3,
-		});
-
 		this.initConnection = this.initConnection.bind(this);
 		this.query = this.query.bind(this);
 		this.loadCookies = this.loadCookies.bind(this);
@@ -34,6 +25,7 @@ class TorrentImport {
 		this.proxies = this.loadProxies();
 		this.proxyList = [];
 		this.limit = 5;
+		this.connection = this.initConnection();
 	}
 
 	initConnection() {
