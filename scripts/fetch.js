@@ -17,6 +17,7 @@ class Fetch {
 				encoding: 'utf8'
 			}).split(/\r?\n/).map(e => e.trim()).filter(e => e).map(e => e.split(/\/g\//).pop().split(/[/,_\s]/));
 		}
+		this.fetchList.sort((a, b) => a[0] - b[0])
 		this.retryTimes = 3;
 	}
 

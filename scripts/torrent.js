@@ -162,6 +162,7 @@ class TorrentImport {
 					hostname: this.host,
 					path: `/gallerytorrents.php?gid=${gid}&t=${token}`,
 					headers: {
+						'Host': this.host,
 						'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*',
 						'Accept-Language': 'en-US;q=0.9,en;q=0.8',
 						'DNT': 1,
@@ -306,7 +307,7 @@ class TorrentImport {
 							await this.query('UPDATE gallery SET root_gid = ? WHERE gid = ?', [gid, item.gid]);
 							if (+gid !== +item.gid) {
 								console.log(`*** root gid of ${item.gid} is ${gid}`);
-							}
+							} else console.log(`*** ${gid} done`);
 							if (newTorrents.length) {
 								console.log(`*** got ${newTorrents.length} new torrents for gid ${gid}`);
 							}

@@ -221,6 +221,7 @@ class Sync {
 
 			await getPages(false);
 			await getPages(true);
+			list.sort((a, b) => a[0] - b[0]);
 
 			if (!list.length) {
 				console.log('no new gallery available');

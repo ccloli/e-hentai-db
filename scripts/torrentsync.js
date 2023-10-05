@@ -390,7 +390,7 @@ class TorrentSync {
 					}
 					if (+gid !== +rootGid) {
 						console.log(`*** root gid of ${gid} is ${rootGid}`);
-					}
+					} else console.log(`*** ${gid} done`);
 					if (newTorrents.length) {
 						console.log(`*** got ${newTorrents.length} new torrents for gid ${gid}`);
 					}
