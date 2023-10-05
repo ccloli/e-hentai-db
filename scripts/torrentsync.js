@@ -170,7 +170,7 @@ class TorrentSync {
 					res.on('data', chunk => response += chunk);
 					res.on('end', () => {
 						try {
-							const torrentRegex = /name="gtid"\svalue="(\d+?)"[\s\S]*?Posted:<.*?(\d{4}-\d{2}-\d{2} \d{2}:\d{2})<\/[\s\S]*?Size:.*>\s?([\d.KMGTB ]+)<\/[\s\S]*?Uploader:.*?([\S]+)<\/[\s\S]*?([0-9a-f]{40})\.torrent.*?>(.*?)<\/a><\/td>/g;
+							const torrentRegex = /name="gtid"\svalue="(\d+?)"[\s\S]*?Posted:<.*?(\d{4}-\d{2}-\d{2} \d{2}:\d{2})<\/[\s\S]*?Size:.*>\s?([\d.KMGTiB ]+)<\/[\s\S]*?Uploader:.*?([\S]+)<\/[\s\S]*?([0-9a-f]{40})\.torrent.*?>(.*?)<\/a><\/td>/g;
 							let exec;
 							let list = [];
 							// eslint-disable-next-line no-cond-assign
