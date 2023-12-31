@@ -62,7 +62,7 @@ const Home = ({ history }) => {
 		};
 		Object.keys(options).forEach((cur) => {
 			if (append) {
-				if (cur === 'keyword' && options[cur].startsWith('uploader:')) {
+				if (cur === 'keyword' && options[cur].startsWith('uploader:') && data[cur]) {
 					data[cur] = data[cur].replace(/\s*uploader:(?:"[\s\S]+?\$"|.+?\$)/, '');
 				}
 				data[cur] = [data[cur], options[cur]].filter(e => e).join(' ');
