@@ -27,17 +27,31 @@ const Home = ({ history }) => {
 		const { signal } = abort;
 
 		fetch(`/api/search${history.location.search}`, { signal }).then(res => res.json()).then((res) => {
-			const { data, total } = res;
+			const { data, total, code, message } = res;
 			aborter.current = null;
+			setLoading(false);
+
+			if (code !== 200) {
+				alert('Request error: ' + (message || 'unknown'));
+				return;
+			}
+
 			setList(data);
 			setTotal(total);
-			setLoading(false);
 			if (totalStatus.current) {
 				totalStatus.current.scrollIntoView({
 					behavior: 'smooth',
 					block: 'nearest',
 				});
 			}
+		}).catch((err) => {
+			if (err.name === 'AbortError') {
+				return;
+			}
+
+			aborter.current = null;
+			setLoading(false);
+			alert('Request error: ' + ((err || {}).message || 'unknown'));
 		});
 	};
 
@@ -74,7 +88,7 @@ const Home = ({ history }) => {
 		onSearch(data);
 	};
 
-	useEffect(getList, [history.location.search]);
+	useEffect(getList, [history.location]);
 
 	return (
 		<div className={styles.container}>
