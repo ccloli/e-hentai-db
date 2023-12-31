@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './Torrent.css';
 import moment from 'moment';
 
-const Torrent = ({ torrents }) => (
+const Torrent = ({ torrents, gid }) => (
 	<table className={styles.table}>
 		<colgroup>
 			<col style={{ width: '90px' }} />
@@ -25,7 +25,7 @@ const Torrent = ({ torrents }) => (
 				<tr key={e.id || e.hash}>
 					<td>{e.id}</td>
 					<td>
-						<a href={`magnet:?xt=urn:btih:${e.hash}`}>{e.name}</a>
+						<a href={`magnet:?xt=urn:btih:${e.hash}&dn=${encodeURIComponent(e.name)}${gid ? `tr=http%3a%2f%2fehtracker.org%2f${gid}%2fannounce` : ''}`}>{e.name}</a>
 					</td>
 					<td>{e.fsizestr}</td>
 					<td>{e.uploader}</td>

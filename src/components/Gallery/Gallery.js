@@ -143,7 +143,7 @@ const Gallery = ({
 				</div>
 			</div>
 			<Modal visible={visible} onClose={toggleTorrentModal}>
-				<Torrent torrents={torrents} />
+				<Torrent torrents={torrents} gid={gid} />
 			</Modal>
 		</div>
 	);
