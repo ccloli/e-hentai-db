@@ -2,6 +2,7 @@ const ConnectDB = require('../util/connectDB');
 const getResponse = require('../util/getResponse');
 const queryTags = require('../util/queryTags');
 const queryTorrents = require('../util/queryTorrents');
+const normalizedTag = require('../util/normalizedTag');
 
 const tagList = async (req, res) => {
 	let { tag, page = 1, limit = 10 } = Object.assign({}, req.params, req.query);
@@ -15,7 +16,7 @@ const tagList = async (req, res) => {
 		return res.json(getResponse(null, 400, 'limit is too large'));
 	}
 
-	const tags = tag.split(/\s*,\s*/).filter(e => e);
+	const tags = tag.split(/\s*,\s*/).filter(e => e).map(normalizedTag);
 	if (!tags.length) {
 		return res.json(getResponse(null, 400, 'tag is not defined'));
 	}

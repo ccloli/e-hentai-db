@@ -4,6 +4,7 @@ const matchExec = require('../util/matchExec');
 const { categoryMap } = require('../util/category');
 const queryTags = require('../util/queryTags');
 const queryTorrents = require('../util/queryTorrents');
+const normalizedTag = require('../util/normalizedTag');
 
 const search = async (req, res) => {
 	let {
@@ -47,7 +48,7 @@ const search = async (req, res) => {
 			value = value.substr(1);
 			target = to.exc;
 		}
-		return { target, value };
+		return { target, value: normalizedTag(value) };
 	};
 
 	const rawUploader = matchExec(keyword, /(?:^|\s)(uploader:("[\s\S]+?\$"|.+?\$))(?=\s|$)/g);
