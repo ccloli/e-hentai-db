@@ -55,11 +55,23 @@ const Home = ({ history }) => {
 		onSearch({ ...query, page });
 	};
 
-	const onGallerySearch = (options) => {
+	const onGallerySearch = (options, { append } = {}) => {
 		const { category, expunged, minpage, maxpage, minrating, advance } = query;
-		onSearch({
-			category, expunged, minpage, maxpage, minrating, limit, advance, ...options
-		});
+		const data = {
+			...query, category, expunged, minpage, maxpage, minrating, limit, advance
+		};
+		Object.keys(options).forEach((cur) => {
+			if (append) {
+				if (cur === 'keyword' && options[cur].startsWith('uploader:')) {
+					data[cur] = data[cur].replace(/\s*uploader:(?:"[\s\S]+?\$"|.+?\$)/, '');
+				}
+				data[cur] = [data[cur], options[cur]].filter(e => e).join(' ');
+			}
+			else {
+				data[cur] = options[cur];
+			}
+		}, {});
+		onSearch(data);
 	};
 
 	useEffect(getList, [history.location.search]);

@@ -41,8 +41,10 @@ const Gallery = ({
 				</div>
 				<div className={styles.metaSingleItem}>
 					<a
-						onClick={() => onSearch({
+						onClick={(event) => onSearch({
 							keyword: `uploader:${/\s/.test(uploader) ? `"${uploader}$"` : `${uploader}$`}`
+						}, {
+							append: event.ctrlKey,
 						})}>
 						{uploader}
 					</a>
@@ -127,8 +129,10 @@ const Gallery = ({
 								{list.map(tag => (
 									<a
 										key={tag}
-										onClick={() => onSearch({
+										onClick={(event) => onSearch({
 											keyword: `${type === 'misc' ? '' : `${type}:`}${/\s/.test(tag) ? `"${tag}$"` : `${tag}$`}`
+										}, {
+											append: event.ctrlKey,
 										})}>
 										{tag}
 									</a>
