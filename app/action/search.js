@@ -48,7 +48,8 @@ const search = async (req, res) => {
 		}
 
 		const exclude = value[0] === '-';
-		if (exclude) {
+		const or = value[0] === '~';
+		if (exclude || or) {
 			value = value.substr(1);
 		}
 
@@ -67,6 +68,9 @@ const search = async (req, res) => {
 		}
 
 		let target = fullmatch ? to.inc : to.like;
+		if (or) {
+			target = fullmatch ? to.or : to.orLike;
+		}
 		if (exclude) {
 			value = value.substr(1);
 			target = fullmatch ? to.exc : to.notLike;
@@ -85,7 +89,7 @@ const search = async (req, res) => {
 	}, keyword).trim();
 
 	const rawUploader = matchExec(keyword, /(?:^|\s)(uploader:("[\s\S]+?\$?"|.+?\$?))(?=\s|$)/g);
-	const uploader = { inc: [], exc: [], like: [], notLike: [] };
+	const uploader = { inc: [], exc: [], like: [], notLike: [], or: [], orLike: [] };
 	keyword = rawUploader.reduceRight((pre, cur) => {
 		const { target, value } = getTargetValue(cur[1], uploader, {
 			tag: true
@@ -95,7 +99,7 @@ const search = async (req, res) => {
 	}, keyword).trim();
 
 	const rawTags = matchExec(keyword, /(?:^|\s+)(\S*?:(?:"[\s\S]+?\$?"|[^"]+?\$?))(?=\s|$)/g);
-	const tags = { inc: [], exc: [], like: [], notLike: [] };
+	const tags = { inc: [], exc: [], like: [], notLike: [], or: [], orLike: [] };
 	keyword = rawTags.reduceRight((pre, cur) => {
 		const { target, value } = getTargetValue(cur[1], tags, {
 			tag: true
@@ -103,6 +107,8 @@ const search = async (req, res) => {
 		target.push(value);
 		return pre.substr(0, cur.index) + pre.substr(cur.index + cur[0].length);
 	}, keyword).trim();
+	tags.inc = [...tags.inc, ...tags.or];
+	tags.like = [...tags.like, ...tags.orLike];
 
 	const keywords = { inc: [], exc: [], like: [], notLike: [] };
 	(keyword.match(/".+?"|[^\s]+/g) || []).forEach((e) => {
@@ -115,7 +121,7 @@ const search = async (req, res) => {
 	let table;
 	// prefer to get tag galleries first
 	/* eslint-disable indent */
-	if (tags.inc.length || tags.exc.length || tags.like.length || tags.notLike.length) {
+	if (tags.inc.length || tags.exc.length || tags.or.length || tags.like.length || tags.notLike.length || tags.orLike.length) {
 		if (tags.inc.length || tags.like.length) {
 			const inc = [...new Set(tags.inc)];
 			const like = [...new Set(tags.like)];
@@ -137,6 +143,25 @@ const search = async (req, res) => {
 				}, 0)]
 			);
 		}
+
+		if (tags.or.length || tags.orLike.length) {
+			const orTable = conn.connection.format(
+				`(
+					SELECT a.* FROM gid_tid AS a INNER JOIN (
+						SELECT id FROM tag WHERE ${[
+					tags.or.length && conn.connection.format('name IN (?)', [tags.or]),
+					tags.orLike.length && tags.orLike.map(e => conn.connection.format('name LIKE ?', [e])).join(' OR ')
+				].filter(e => e).join(' OR ')}
+					) AS b ON a.tid = b.id
+				)`
+			);
+			if (!table) {
+				table = orTable;
+			} else {
+				table = `SELECT a.* FROM ${table} AS a INNER JOIN ${orTable} AS b ON a.gid = b.gid`;
+			}
+		}
+
 		let excTable;
 		if (tags.exc.length || tags.notLike.length) {
 			excTable = conn.connection.format(
@@ -164,10 +189,10 @@ const search = async (req, res) => {
 		else {
 			if (excTable) {
 				table = `(
-					SELECT a.* FROM ${table} AS a LEFT JOIN ${excTable} AS b ON a.gid = b.gid WHERE b.gid IS NULL
+					SELECT a.* FROM (${table}) AS a LEFT JOIN ${excTable} AS b ON a.gid = b.gid WHERE b.gid IS NULL
 				)`;
 			}
-			table = `gallery FORCE INDEX(posted) INNER JOIN ${table} AS t ON gallery.gid = t.gid`;
+			table = `gallery FORCE INDEX(posted) INNER JOIN (${table}) AS t ON gallery.gid = t.gid`;
 		}
 	}
 	else {
@@ -207,15 +232,13 @@ const search = async (req, res) => {
 		).join(' AND '),
 	].filter(e => e).join(' AND ');
 
-	console.log(table, query, keywords);
-
 	const result = await conn.query(
-		`SELECT gallery.* FROM ${table} WHERE ${query || 1} ORDER BY gallery.posted DESC LIMIT ? OFFSET ?`,
+		`SELECT DISTINCT gallery.* FROM ${table} WHERE ${query || 1} ORDER BY gallery.posted DESC LIMIT ? OFFSET ?`,
 		[limit, (page - 1) * limit]
 	);
 
 	const noForceIndexTable = table.replace('FORCE INDEX(posted)', '');
-	const { total } = (await conn.query(`SELECT COUNT(*) AS total FROM ${noForceIndexTable} WHERE ${query || 1}`))[0];
+	const { total } = (await conn.query(`SELECT COUNT(DISTINCT gallery.gid) AS total FROM ${noForceIndexTable} WHERE ${query || 1}`))[0];
 
 	if (!result.length) {
 		conn.destroy();
