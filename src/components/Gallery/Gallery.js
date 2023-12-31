@@ -40,7 +40,10 @@ const Gallery = ({
 					</div>
 				</div>
 				<div className={styles.metaSingleItem}>
-					<a onClick={() => onSearch({ keyword: `uploader:${uploader}` })}>
+					<a
+						onClick={() => onSearch({
+							keyword: `uploader:${/\s/.test(uploader) ? `"${uploader}$"` : `${uploader}$`}`
+						})}>
 						{uploader}
 					</a>
 				</div>

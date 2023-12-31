@@ -50,10 +50,10 @@ const search = async (req, res) => {
 		return { target, value };
 	};
 
-	const rawUploader = matchExec(keyword, /(?:^|\s)(uploader:(.+?))(?=\s|$)/g);
+	const rawUploader = matchExec(keyword, /(?:^|\s)(uploader:("[\s\S]+?\$"|.+?\$))(?=\s|$)/g);
 	const uploader = { inc: [], exc: [] };
 	keyword = rawUploader.reduceRight((pre, cur) => {
-		const { target, value } = getTargetValue(cur[1], uploader);
+		const { target, value } = getTargetValue(cur[1].replace(/"|\$/g, ''), uploader);
 		target.unshift(value.split(':', 2)[1]);
 		return pre.substr(0, cur.index) + pre.substr(cur.index + cur[0].length);
 	}, keyword);
