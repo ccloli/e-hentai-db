@@ -41,41 +41,70 @@ const search = async (req, res) => {
 		cats = category.split(/\s*,\s*/).filter(e => e);
 	}
 
-	const getTargetValue = (input, to) => {
-		let value = input;
-		let target = to.inc;
-		if (value[0] === '-') {
+	const getTargetValue = (input, to, { tag } = {}) => {
+		let value = input.trim();
+		if (tag) {
+			value = value.replace(/"|\$/g, '').replace(/\*$/, '%');
+		}
+
+		const exclude = value[0] === '-';
+		if (exclude) {
 			value = value.substr(1);
-			target = to.exc;
+		}
+
+		let fullmatch = !tag || /\$"?$/.test(input);
+		if (tag) {
+			if (!fullmatch && !value.endsWith('%')) {
+				value = `${value}%`;
+			}
+			if (tag && input.startsWith('tag:')) {
+				fullmatch = false;
+				value = value.replace(/^tag:/, '%:');
+			}
+			if (value.endsWith('%')) {
+				fullmatch = false;
+			}
+		}
+
+		let target = fullmatch ? to.inc : to.like;
+		if (exclude) {
+			value = value.substr(1);
+			target = fullmatch ? to.exc : to.notLike;
 		}
 		return { target, value: normalizedTag(value) };
 	};
 
-	const rawRootIds = matchExec(keyword, /(?:^|\s)(gid:("[\s\S]+?\$"|.+?\$))(?=\s|$)/g);
+	keyword = keyword.trim();
+
+	const rawRootIds = matchExec(keyword, /(?:^|\s)(gid:("[\s\S]+?\$?"|.+?\$?))(?=\s|$)/g);
 	const rootIds = { inc: [], exc: [] };
 	keyword = rawRootIds.reduceRight((pre, cur) => {
 		const { target, value } = getTargetValue(cur[1].replace(/"|\$/g, ''), rootIds);
-		target.unshift(+value.split(':', 2)[1]);
+		target.push(+value.split(':', 2)[1]);
 		return pre.substr(0, cur.index) + pre.substr(cur.index + cur[0].length);
-	}, keyword);
+	}, keyword).trim();
 
-	const rawUploader = matchExec(keyword, /(?:^|\s)(uploader:("[\s\S]+?\$"|.+?\$))(?=\s|$)/g);
-	const uploader = { inc: [], exc: [] };
+	const rawUploader = matchExec(keyword, /(?:^|\s)(uploader:("[\s\S]+?\$?"|.+?\$?))(?=\s|$)/g);
+	const uploader = { inc: [], exc: [], like: [], notLike: [] };
 	keyword = rawUploader.reduceRight((pre, cur) => {
-		const { target, value } = getTargetValue(cur[1].replace(/"|\$/g, ''), uploader);
-		target.unshift(value.split(':', 2)[1]);
+		const { target, value } = getTargetValue(cur[1], uploader, {
+			tag: true
+		});
+		target.push(value.split(':', 2)[1]);
 		return pre.substr(0, cur.index) + pre.substr(cur.index + cur[0].length);
-	}, keyword);
+	}, keyword).trim();
 
-	const rawTags = matchExec(keyword, /(?:^|\s)(\S*?:?(?:"[\s\S]+?\$"|.+?\$))(?=\s|$)/g);
-	const tags = { inc: [], exc: [] };
+	const rawTags = matchExec(keyword, /(?:^|\s+)(\S*?:(?:"[\s\S]+?\$?"|[^"]+?\$?))(?=\s|$)/g);
+	const tags = { inc: [], exc: [], like: [], notLike: [] };
 	keyword = rawTags.reduceRight((pre, cur) => {
-		const { target, value } = getTargetValue(cur[1].replace(/"|\$/g, ''), tags);
-		target.unshift(value);
+		const { target, value } = getTargetValue(cur[1], tags, {
+			tag: true
+		});
+		target.push(value);
 		return pre.substr(0, cur.index) + pre.substr(cur.index + cur[0].length);
-	}, keyword);
+	}, keyword).trim();
 
-	const keywords = { inc: [], exc: [] };
+	const keywords = { inc: [], exc: [], like: [], notLike: [] };
 	(keyword.match(/".+?"|[^\s]+/g) || []).forEach((e) => {
 		const { target, value } = getTargetValue(e, keywords);
 		target.push(value.replace(/^"|"$/g, ''));
@@ -85,26 +114,40 @@ const search = async (req, res) => {
 
 	let table;
 	// prefer to get tag galleries first
-	if (tags.inc.length || tags.exc.length) {
-		if (tags.inc.length) {
+	/* eslint-disable indent */
+	if (tags.inc.length || tags.exc.length || tags.like.length || tags.notLike.length) {
+		if (tags.inc.length || tags.like.length) {
+			const inc = [...new Set(tags.inc)];
+			const like = [...new Set(tags.like)];
 			table = conn.connection.format(
 				`(
 					SELECT a.* FROM gid_tid AS a INNER JOIN (
-						SELECT id FROM tag WHERE name IN (?)
-					) AS b ON a.tid = b.id GROUP BY a.gid HAVING COUNT(a.gid) = ? ORDER BY NULL
+						SELECT id FROM tag WHERE ${[
+							inc.length && conn.connection.format('name IN (?)', [inc]),
+							like.length && like.map(e => conn.connection.format('name LIKE ?', [e])).join(' OR ')
+						].filter(e => e).join(' OR ')}
+					) AS b ON a.tid = b.id GROUP BY a.gid HAVING COUNT(a.gid) >= ? ORDER BY NULL
 				)`,
-				[tags.inc, tags.inc.length]
+				// TODO: inc + like?
+				[inc.length + like.reduce((pre, e) => {
+					if (inc.some(i => i.includes(e.replace(/%/g, '')))) {
+						return pre;
+					}
+					return pre + 1;
+				}, 0)]
 			);
 		}
 		let excTable;
-		if (tags.exc.length) {
+		if (tags.exc.length || tags.notLike.length) {
 			excTable = conn.connection.format(
 				`(
 					SELECT a.* FROM gid_tid AS a INNER JOIN (
-						SELECT id FROM tag WHERE name IN (?)
+						SELECT id FROM tag WHERE ${[
+							tags.inc.length && conn.connection.format('name IN (?)', [tags.exc]),
+							tags.like.length && tags.like.map(e => conn.connection.format('name LIKE ?', [e])).join(' OR ')
+						].filter(e => e).join(' OR ')}
 					) AS b ON a.tid = b.id
-				)`,
-				[tags.exc]
+				)`
 			);
 			// if (table) {
 			// 	table = `gallery LEFT JOIN ${excTable} AS t ON gallery.gid = t.gid WHERE t.gid IS NULL`;
@@ -130,6 +173,7 @@ const search = async (req, res) => {
 	else {
 		table = 'gallery';
 	}
+	/* eslint-enable indent */
 
 	const query = [
 		!expunged && 'expunged = 0',
@@ -149,13 +193,21 @@ const search = async (req, res) => {
 		maxdate && conn.connection.format('posted <= ?', [maxdate]),
 		// MariaDB can use `RLIKE '(?=keywordA)(?=keywordB)...'` to optimize the performance
 		// but looks like MySQL 5+ doesn't support positive look ahead
-		keywords.inc.length && keywords.inc.map(
-			e => conn.connection.format('CONCAT_WS(\' \', title, title_jpn) LIKE ?', `%${e}%`)
+		(keywords.inc.length || keywords.like.length) && [
+			...keywords.inc.map(e => `%${e}%`),
+			...keywords.like,
+		].map(
+			e => conn.connection.format('CONCAT_WS(\' \', title, title_jpn) LIKE ?', e)
 		).join(' AND '),
-		keywords.exc.length && keywords.exc.map(
-			e => conn.connection.format('CONCAT_WS(\' \', title, title_jpn) NOT LIKE ?', `%${e}%`)
+		(keywords.exc.length || keywords.notLike.length) && [
+			...keywords.exc.map(e => `%${e}%`),
+			...keywords.notLike,
+		].map(
+			e => conn.connection.format('CONCAT_WS(\' \', title, title_jpn) NOT LIKE ?', e)
 		).join(' AND '),
 	].filter(e => e).join(' AND ');
+
+	console.log(table, query, keywords);
 
 	const result = await conn.query(
 		`SELECT gallery.* FROM ${table} WHERE ${query || 1} ORDER BY gallery.posted DESC LIMIT ? OFFSET ?`,
