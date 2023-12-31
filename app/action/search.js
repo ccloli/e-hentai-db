@@ -51,6 +51,14 @@ const search = async (req, res) => {
 		return { target, value: normalizedTag(value) };
 	};
 
+	const rawRootIds = matchExec(keyword, /(?:^|\s)(gid:("[\s\S]+?\$"|.+?\$))(?=\s|$)/g);
+	const rootIds = { inc: [], exc: [] };
+	keyword = rawRootIds.reduceRight((pre, cur) => {
+		const { target, value } = getTargetValue(cur[1].replace(/"|\$/g, ''), rootIds);
+		target.unshift(+value.split(':', 2)[1]);
+		return pre.substr(0, cur.index) + pre.substr(cur.index + cur[0].length);
+	}, keyword);
+
 	const rawUploader = matchExec(keyword, /(?:^|\s)(uploader:("[\s\S]+?\$"|.+?\$))(?=\s|$)/g);
 	const uploader = { inc: [], exc: [] };
 	keyword = rawUploader.reduceRight((pre, cur) => {
@@ -129,6 +137,9 @@ const search = async (req, res) => {
 		!replaced && 'replaced = 0',
 		!tags.inc.length && tags.exc.length && 't.gid IS NULL',
 		cats.length && cats.length !== 10 && conn.connection.format('category IN (?)', [cats]),
+		// E-Hentai only returns the latest gallery of specific gid, but whatever, we have `replaced`
+		rootIds.inc.length && conn.connection.format('root_gid IN (SELECT root_gid FROM gallery WHERE gid IN (?))', [rootIds.inc]),
+		rootIds.exc.length && conn.connection.format('root_gid NOT IN (SELECT root_gid FROM gallery WHERE gid IN (?))', [rootIds.exc]),
 		uploader.inc.length && conn.connection.format('uploader IN (?)', [uploader.inc]),
 		uploader.exc.length && conn.connection.format('uploader NOT IN (?)', [uploader.exc]),
 		minpage && conn.connection.format('filecount >= ?', [minpage]),
