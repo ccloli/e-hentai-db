@@ -52,7 +52,19 @@ const Gallery = ({
 				<div className={styles.metaItem}>
 					<span className={styles.metaLabel}>Gallery ID:</span>
 					<span className={styles.metaValue}>
-						{gid}
+						<span onClick={(event) => {
+							event.preventDefault();
+							event.stopPropagation();
+							if (event.ctrlKey) {
+								window.open(
+									`https://e${event.altKey ? 'x' : '-'}hentai.org/g/${gid}/${token}/`,
+									'_blank',
+									'noreferrer'
+								);
+							}
+						}}>
+							{gid}
+						</span>
 					</span>
 				</div>
 				<div className={styles.metaItem}>
