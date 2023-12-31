@@ -52,19 +52,27 @@ const Gallery = ({
 				<div className={styles.metaItem}>
 					<span className={styles.metaLabel}>Gallery ID:</span>
 					<span className={styles.metaValue}>
-						<span onClick={(event) => {
-							event.preventDefault();
-							event.stopPropagation();
-							if (event.ctrlKey) {
-								window.open(
-									`https://e${event.altKey ? 'x' : '-'}hentai.org/g/${gid}/${token}/`,
-									'_blank',
-									'noreferrer'
-								);
-							}
-						}}>
+						<a
+							title="Search galleries belongs to the ID"
+							onClick={(event) => {
+								if (event.ctrlKey) {
+									event.preventDefault();
+									event.stopPropagation();
+									window.open(
+										`https://e${event.altKey ? 'x' : '-'}hentai.org/g/${gid}/${token}/`,
+										'_blank',
+										'noreferrer'
+									);
+								} else {
+									onSearch({
+										keyword: `gid:${gid}$`
+									}, {
+										append: event.ctrlKey,
+									});
+								}
+							}}>
 							{gid}
-						</span>
+						</a>
 					</span>
 				</div>
 				<div className={styles.metaItem}>
