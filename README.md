@@ -192,10 +192,32 @@ Returns: `metadata[]`
 
 Get a list of galleries which matches all the query requests.
 
-The rule of `keyword` is the same as E-Hentai:
+The rule of `keyword` supports most operators of [E-Hentai](https://ehwiki.org/wiki/Gallery_Searching):
+
+- Search for gallery title and Japanese title
+- Exact terms (`" "`) with spaces
+    - Underscore (_) is not supported (use Quotation `" "` instead)
+- Wildcard (`*`/`%`) at the end of the pattern (though the query will add `%` by default)
+- Exclude (`-`) specific terms
+- Or (`~`), matching any one of them [v0.3.1]
+- Colon namespaces (`:`) for tags
+    - Supports a subset of qualifiers tags: `tag:`, `uploader:`, `gid:` [v0.3.1]
+    - Terms without `:` will be treated as title keyword (probably like `title:`?)
+- Exact match for tags (`$`)
+    - Tags without `$` can be used for prefix match [v0.3.1]
+- Shorten tag namespaces (`character:` -> `char:` / `c:`) [v0.3.1]
+
+For usage examples, see [EHWiki](https://ehwiki.org/wiki/Gallery_Searching#Examples).
+
+
+<details>
+<summary>Before v0.3.1:</summary>
+
 - If you want to search an uploader, use `uploader:{uploader}`
 - If you want to search a tag, use `{tagType}:{tagName}$`, and if `tagName` contains space, quote it and `$`, like `{tagType}:"{tagName}$"`
 - If you want to search a word, just put it, and if it contains space, quote it like `"{keyword}"`
+
+</details>
 
 You can use multiple keywords, split them with space `%20`, relations between all the keywords are `AND` (except `uploder` uses `OR`), so in theory more keywords will get more accure results
 
