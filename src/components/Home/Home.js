@@ -70,10 +70,8 @@ const Home = ({ history }) => {
 	};
 
 	const onGallerySearch = (options, { append } = {}) => {
-		const { category, expunged, minpage, maxpage, minrating, advance } = query;
-		const data = {
-			...query, category, expunged, minpage, maxpage, minrating, limit, advance
-		};
+		const data = { ...query };
+		delete data.page;
 		Object.keys(options).forEach((cur) => {
 			if (append) {
 				if (cur === 'keyword' && options[cur].startsWith('uploader:') && data[cur]) {
